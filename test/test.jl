@@ -2,5 +2,10 @@
 # 2016
 # test
 
-using Urn
+using Urnitol
 
+ball1 = Ball("black")
+ball2 = Ball("white")
+
+urn1 = Urn("urnie")
+urn2 = Urn("bert", [ball1, ball2])
