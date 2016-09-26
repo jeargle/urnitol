@@ -4,8 +4,11 @@
 
 using Urnitol
 
-ball1 = Ball("black")
-ball2 = Ball("white")
+ball1 = Ball("black", 2)
+ball2 = Ball("white", 3)
 
 urn1 = Urn("urnie")
 urn2 = Urn("bert", [ball1, ball2])
+
+println(urn1)
+println(urn2)

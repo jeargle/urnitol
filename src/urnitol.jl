@@ -7,14 +7,15 @@ module Urnitol
 export Ball, Urn
 
 type Ball
-    color::String
+    color::AbstractString
+    count::Int
 end
 
 type Urn
-    name::String
+    name::AbstractString
     balls::Array{Ball, 1}
-    Urn(name::String) = new(name, Ball[])
-    Urn(name::String, balls) = new(name, balls)
+    Urn(name::AbstractString) = new(name, Ball[])
+    Urn(name::AbstractString, balls) = new(name, balls)
 end
 
 end
