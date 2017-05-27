@@ -4,7 +4,7 @@
 
 module Urnitol
 
-export EventBin, ProbArray, Urn, pull_ball, choose_event
+export EventBin, ProbArray, Urn, move_balls, pull_ball, pull, choose_event
 
 
 type Urn
@@ -17,10 +17,22 @@ end
 type EventBin
     name::AbstractString
     balls::Dict{AbstractString, Int64}
-    EventBin(name::AbstractString, balls) = new(name, balls)
+    pulls::Array{Urn, 1}
+    actions::Array{Tuple{AbstractString, Urn, AbstractString}, 1}
+    EventBin(name::AbstractString, balls, pulls, actions) = new(name, balls, pulls, actions)
 end
 
-function pull_ball(urn)
+function move_balls(balls1::Dict, balls2::Dict)
+    for i in keys(balls1)
+        if get(balls2, i, null) == null
+            balls2[i] = 0
+        end
+        balls2[i] += balls1[i]
+        balls1[i] = 0
+    end
+end
+
+function pull_ball(urn::Urn)
     total_balls = sum(values(urn.balls))
     ball_idx = rand(1:total_balls)
     ball_count = 0
@@ -35,6 +47,13 @@ function pull_ball(urn)
     end
     
     return chosen_balls
+end
+
+function pull(bin::EventBin)
+    for i in bin.pulls
+        balls = pull_ball(i)
+        move_balls(balls, bin.balls)
+    end
 end
 
 type ProbArray
