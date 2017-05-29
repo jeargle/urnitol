@@ -4,7 +4,7 @@
 
 module Urnitol
 
-export EventBin, ProbArray, Urn, move_balls, pull_ball, pull, choose_event
+export EventBin, ProbArray, Urn, move_balls, discard_balls, pull_ball, pull, act, choose_event
 
 
 type Urn
@@ -18,17 +18,50 @@ type EventBin
     name::AbstractString
     balls::Dict{AbstractString, Int64}
     pulls::Array{Urn, 1}
-    actions::Array{Tuple{AbstractString, Urn, AbstractString}, 1}
+    # actions: Array of action commands of the form
+    #   ("action_to_perform", Urn, "ball_class")
+    actions::Array{Tuple{AbstractString, Urn, Any}, 1}
     EventBin(name::AbstractString, balls, pulls, actions) = new(name, balls, pulls, actions)
 end
 
-function move_balls(balls1::Dict, balls2::Dict)
-    for i in keys(balls1)
-        if get(balls2, i, null) == null
+# Move balls from one collection into another.
+# balls1: collection of balls to move
+# balls2: collection to receive balls
+# class: single class of ball to move; nothing uses all classes
+function move_balls(balls1::Dict, balls2::Dict; class=nothing)
+    if class == nothing
+        classes = keys(balls1)
+    else
+        classes = [class]
+    end
+
+    for i in classes
+        if get(balls2, i, nothing) == nothing
             balls2[i] = 0
         end
         balls2[i] += balls1[i]
         balls1[i] = 0
+    end
+end
+
+# Move balls from one collection into another.
+# balls: collection of balls to move
+# discard: collection to receive balls
+# class: single class of ball to move; nothing uses all classes
+function discard_balls(balls::Dict; discard=nothing, class=nothing)
+
+    if discard == nothing
+        if class == nothing
+            classes = keys(balls)
+        else
+            classes = [class]
+        end
+        
+        for i in classes
+            balls[i] = 0
+        end
+    else
+        move_balls(balls, discard, class=class)
     end
 end
 
@@ -49,10 +82,31 @@ function pull_ball(urn::Urn)
     return chosen_balls
 end
 
+# Pull balls from Urns into an EventBin.
+# bin: EventBin
 function pull(bin::EventBin)
     for i in bin.pulls
         balls = pull_ball(i)
         move_balls(balls, bin.balls)
+    end
+end
+
+# Perform actions on all balls in an EventBin.
+# Actions are performed in Array order.  Possible actions are: move,
+# discard, and double.  Actions can be applied to all balls or to
+# specific classes.  After all actions are performed, there should be
+# no balls left in the EventBin.
+# bin: EventBin
+function act(bin::EventBin)
+    println("act")
+    for (command, urn, class) in bin.actions
+        println("  ", command)
+        if command == "move"
+            move_balls(bin.balls, urn.balls, class=class)
+        elseif command == "discard"
+            discard_balls(bin.balls, discard=urn.balls, class=class)
+        elseif command == "double"
+        end
     end
 end
 
