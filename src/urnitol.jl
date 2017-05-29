@@ -4,7 +4,7 @@
 
 module Urnitol
 
-export EventBin, ProbArray, Urn, move_balls, discard_balls, pull_ball, pull, act, choose_event
+export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, choose_event
 
 
 type Urn
@@ -20,7 +20,7 @@ type EventBin
     pulls::Array{Urn, 1}
     # actions: Array of action commands of the form
     #   ("action_to_perform", Urn, "ball_class")
-    actions::Array{Tuple{AbstractString, Urn, Any}, 1}
+    actions::Array{Tuple{AbstractString, Union{Urn, Void}, Any}, 1}
     EventBin(name::AbstractString, balls, pulls, actions) = new(name, balls, pulls, actions)
 end
 
@@ -104,10 +104,42 @@ function act(bin::EventBin)
         if command == "move"
             move_balls(bin.balls, urn.balls, class=class)
         elseif command == "discard"
-            discard_balls(bin.balls, discard=urn.balls, class=class)
+            if urn == nothing
+                discard_balls(bin.balls, class=class)
+            else
+                discard_balls(bin.balls, discard=urn.balls, class=class)
+            end
         elseif command == "double"
         end
     end
+end
+
+type UrnSimulator
+    urns::Array{Urn, 1}
+    events::Array{EventBin, 1}
+end
+
+# Pull balls for all EventBins in an UrnSimulator.
+# sim: UrnSimulator
+function pull(sim::UrnSimulator)
+    for event in sim.events
+        pull(event)
+    end
+end
+
+# Process actions for all EventBins in an UrnSimulator.
+# sim: UrnSimulator
+function act(sim::UrnSimulator)
+    for event in sim.events
+        act(event)
+    end
+end
+
+# Calculate one timestep of an UrnSimulator.
+# sim: UrnSimulator
+function step_sim(sim::UrnSimulator)
+    pull(sim)
+    act(sim)
 end
 
 type ProbArray

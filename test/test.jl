@@ -9,7 +9,9 @@ urn1 = Urn("urnie")
 urn2 = Urn("bert", Dict("black" => 2, "white" => 3))
 urn3 = Urn("sesame", Dict("black" => 20, "white" => 30))
 
-println("*** urns")
+println("***")
+println("*** Urn")
+println("***")
 println(urn1)
 println(urn2)
 println(urn3)
@@ -29,6 +31,10 @@ println("  balls1: ", balls1)
 println("  balls2: ", balls2)
 println()
 
+
+println("***")
+println("*** EventBin")
+println("***")
 ebin1 = EventBin("bin1", Dict("black" => 0), [urn1], [])
 ebin2 = EventBin("bin2", Dict("black" => 0, "white" => 0), [urn3], [("move", urn1, nothing)])
 
@@ -80,3 +86,24 @@ for i in 1:10
 end
 println()
 
+println("***")
+println("*** UrnSimulator")
+println("***")
+
+urn4 = Urn("snuffy", Dict("black" => 30, "white" => 30))
+urn5 = Urn("bird", Dict("black" => 0, "white" => 0))
+ebin3 = EventBin("bin3",
+                 Dict("black" => 0, "white" => 0),
+                 [urn4],
+                 [("move", urn5, "black"),
+                  ("discard", nothing, "white")])
+
+us1 = UrnSimulator([urn4, urn5], [ebin3])
+numsteps = 20
+println("urn4: ", urn4.balls)
+println("urn5: ", urn5.balls)
+for i in 1:numsteps
+    step_sim(us1)
+    println("urn4: ", urn4.balls)
+    println("urn5: ", urn5.balls)
+end
