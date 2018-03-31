@@ -2,7 +2,7 @@
 # 2016-2017
 # test
 
-using Urnitol
+using urnitol
 
 
 function test_urn()
@@ -104,6 +104,7 @@ function test_urnsimulator()
         println("urn2: ", urn2.balls)
     end
 end
+
 
 function main()
     test_urn()

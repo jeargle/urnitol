@@ -1,8 +1,8 @@
 # John Eargle (mailto: jeargle at gmail.com)
 # 2016-2017
-# Urnitol
+# urnitol
 
-module Urnitol
+module urnitol
 
 export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, choose_event
 
@@ -56,7 +56,7 @@ function discard_balls(balls::Dict; discard=nothing, class=nothing)
         else
             classes = [class]
         end
-        
+
         for i in classes
             balls[i] = 0
         end
@@ -78,7 +78,7 @@ function pull_ball(urn::Urn)
             break
         end
     end
-    
+
     return chosen_balls
 end
 
