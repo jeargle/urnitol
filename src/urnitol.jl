@@ -1,5 +1,5 @@
 # John Eargle (mailto: jeargle at gmail.com)
-# 2016-2017
+# 2016-2018
 # urnitol
 
 module urnitol
@@ -7,6 +7,9 @@ module urnitol
 export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, choose_event
 
 
+"""
+Urn for holding balls.
+"""
 type Urn
     name::AbstractString
     balls::Dict{AbstractString, Int64}
@@ -14,6 +17,10 @@ type Urn
     Urn(name::AbstractString, balls) = new(name, balls)
 end
 
+
+"""
+Temporary holding bin for balls that have been removed from Urns.
+"""
 type EventBin
     name::AbstractString
     balls::Dict{AbstractString, Int64}
@@ -24,10 +31,17 @@ type EventBin
     EventBin(name::AbstractString, balls, pulls, actions) = new(name, balls, pulls, actions)
 end
 
-# Move balls from one collection into another.
-# balls1: collection of balls to move
-# balls2: collection to receive balls
-# class: single class of ball to move; nothing uses all classes
+
+"""
+    move_balls(balls1, balls2, class)
+
+Move balls from one collection into another.
+
+# Arguments
+- balls1: collection of balls to move
+- balls2: collection to receive balls
+- class: single class of ball to move; nothing uses all classes
+"""
 function move_balls(balls1::Dict, balls2::Dict; class=nothing)
     if class == nothing
         classes = keys(balls1)
@@ -44,10 +58,17 @@ function move_balls(balls1::Dict, balls2::Dict; class=nothing)
     end
 end
 
-# Move balls from one collection into another.
-# balls: collection of balls to move
-# discard: collection to receive balls
-# class: single class of ball to move; nothing uses all classes
+
+"""
+    discard_balls(balls, discard, class)
+
+Move balls from one collection to a discard bin.
+
+# Arguments
+- balls1: collection of balls to move
+- discard: collection to receive balls
+- class: single class of ball to move; nothing uses all classes
+"""
 function discard_balls(balls::Dict; discard=nothing, class=nothing)
 
     if discard == nothing
@@ -65,6 +86,12 @@ function discard_balls(balls::Dict; discard=nothing, class=nothing)
     end
 end
 
+
+"""
+    pull_ball(urn)
+
+Pull a ball out of an Urn.
+"""
 function pull_ball(urn::Urn)
     total_balls = sum(values(urn.balls))
     ball_idx = rand(1:total_balls)
@@ -82,8 +109,12 @@ function pull_ball(urn::Urn)
     return chosen_balls
 end
 
-# Pull balls from Urns into an EventBin.
-# bin: EventBin
+
+"""
+    pull(bin)
+
+Pull balls from Urns and move them into an EventBin.
+"""
 function pull(bin::EventBin)
     for i in bin.pulls
         balls = pull_ball(i)
@@ -91,12 +122,16 @@ function pull(bin::EventBin)
     end
 end
 
-# Perform actions on all balls in an EventBin.
-# Actions are performed in Array order.  Possible actions are: move,
-# discard, and double.  Actions can be applied to all balls or to
-# specific classes.  After all actions are performed, there should be
-# no balls left in the EventBin.
-# bin: EventBin
+
+"""
+    act(bin)
+
+Perform actions on all balls in an EventBin.
+Actions are performed in Array order.  Possible actions are: move,
+discard, and double.  Actions can be applied to all balls or to
+specific classes.  After all actions are performed, there should be
+no balls left in the EventBin.
+"""
 function act(bin::EventBin)
     println("act")
     for (command, urn, class) in bin.actions
@@ -114,39 +149,60 @@ function act(bin::EventBin)
     end
 end
 
+
+"""
+"""
 type UrnSimulator
     urns::Array{Urn, 1}
     events::Array{EventBin, 1}
 end
 
-# Pull balls for all EventBins in an UrnSimulator.
-# sim: UrnSimulator
+
+"""
+    pull(sim)
+
+Pull balls for all EventBins in an UrnSimulator.
+"""
 function pull(sim::UrnSimulator)
     for event in sim.events
         pull(event)
     end
 end
 
-# Process actions for all EventBins in an UrnSimulator.
-# sim: UrnSimulator
+
+"""
+    act(sim)
+
+Process actions for all EventBins in an UrnSimulator.
+"""
 function act(sim::UrnSimulator)
     for event in sim.events
         act(event)
     end
 end
 
-# Calculate one timestep of an UrnSimulator.
-# sim: UrnSimulator
+
+"""
+    step_sim(sim)
+
+Calculate one timestep of an UrnSimulator.
+"""
 function step_sim(sim::UrnSimulator)
     pull(sim)
     act(sim)
 end
 
+
+"""
+"""
 type ProbArray
     event_weights::Array{EventBin, 1}
 end
 
 
+"""
+    choose_event(prob)
+"""
 function choose_event(prob)
     return rand(prob.event_weights)
 end
