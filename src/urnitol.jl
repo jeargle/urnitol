@@ -91,6 +91,9 @@ end
     pull_ball(urn)
 
 Pull a ball out of an Urn.
+
+# Arguments
+- urn: Urn from which to pull a ball
 """
 function pull_ball(urn::Urn)
     total_balls = sum(values(urn.balls))
@@ -114,12 +117,11 @@ end
     pull(bin)
 
 Pull balls from Urns and move them into an EventBin.
+
+# Arguments
+- bin: EventBin that will pull balls from its Urns
 """
 function pull(bin::EventBin)
-    # for i in bin.urns
-    #     balls = pull_ball(i)
-    #     move_balls(balls, bin.balls)
-    # end
     total_balls = sum([sum(values(urn.balls)) for urn in bin.urns])
     ball_idx = rand(1:total_balls)
     running_ball_count = 0
@@ -142,6 +144,9 @@ Actions are performed in Array order.  Possible actions are: move,
 discard, and double.  Actions can be applied to all balls or to
 specific classes.  After all actions are performed, there should be
 no balls left in the EventBin.
+
+# Arguments
+- bin: EventBin that will perform its actions
 """
 function act(bin::EventBin)
     println("act")
@@ -162,6 +167,8 @@ end
 
 
 """
+Simulator that steps through a sequence of actions involving pulling
+balls from Urns and then placing them in Urns or discarding them.
 """
 type UrnSimulator
     urns::Array{Urn, 1}
@@ -173,6 +180,9 @@ end
     pull(sim)
 
 Pull balls for all EventBins in an UrnSimulator.
+
+# Arguments
+- sim: UrnSimulator that will perform the pull
 """
 function pull(sim::UrnSimulator)
     for event in sim.events
@@ -185,6 +195,9 @@ end
     act(sim)
 
 Process actions for all EventBins in an UrnSimulator.
+
+# Arguments
+- sim: UrnSimulator that will perform the act
 """
 function act(sim::UrnSimulator)
     for event in sim.events
@@ -197,6 +210,9 @@ end
     step_sim(sim)
 
 Calculate one timestep of an UrnSimulator.
+
+# Arguments
+- sim: UrnSimulator that will be stepped forward
 """
 function step_sim(sim::UrnSimulator)
     pull(sim)
@@ -213,6 +229,9 @@ end
 
 """
     choose_event(prob)
+
+# Arguments
+- prob: probability distribution
 """
 function choose_event(prob)
     return rand(prob.event_weights)
