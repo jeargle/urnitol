@@ -81,7 +81,7 @@ function test_eventbin()
     println()
 end
 
-function test_urnsimulator()
+function test_urnsimulator1()
     println("***")
     println("*** UrnSimulator")
     println("***")
@@ -105,11 +105,36 @@ function test_urnsimulator()
     end
 end
 
+function test_urnsimulator2()
+    println("***")
+    println("*** UrnSimulator")
+    println("***")
+
+    urn1 = Urn("snuffy", Dict("black" => 10, "white" => 0))
+    urn2 = Urn("bird", Dict("black" =>0, "white" => 10))
+    ebin1 = EventBin("bin1",
+                     Dict("black" => 0, "white" => 0),
+                     [urn1, urn2],
+                     [("move", urn1, "white"),
+                      ("move", urn2, "black")])
+
+    us1 = UrnSimulator([urn1, urn2], [ebin1])
+    numsteps = 30
+    println("urn1: ", urn1.balls)
+    println("urn2: ", urn2.balls)
+    for i in 1:numsteps
+        step_sim(us1)
+        println("urn1: ", urn1.balls)
+        println("urn2: ", urn2.balls)
+    end
+end
+
 
 function main()
     test_urn()
     test_eventbin()
-    test_urnsimulator()
+    test_urnsimulator1()
+    test_urnsimulator2()
 end
 
 main()

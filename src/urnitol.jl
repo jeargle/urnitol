@@ -24,11 +24,11 @@ Temporary holding bin for balls that have been removed from Urns.
 type EventBin
     name::AbstractString
     balls::Dict{AbstractString, Int64}
-    pulls::Array{Urn, 1}
+    urns::Array{Urn, 1}
     # actions: Array of action commands of the form
     #   ("action_to_perform", Urn, "ball_class")
     actions::Array{Tuple{AbstractString, Union{Urn, Void}, Any}, 1}
-    EventBin(name::AbstractString, balls, pulls, actions) = new(name, balls, pulls, actions)
+    EventBin(name::AbstractString, balls, urns, actions) = new(name, balls, urns, actions)
 end
 
 
@@ -116,9 +116,20 @@ end
 Pull balls from Urns and move them into an EventBin.
 """
 function pull(bin::EventBin)
-    for i in bin.pulls
-        balls = pull_ball(i)
-        move_balls(balls, bin.balls)
+    # for i in bin.urns
+    #     balls = pull_ball(i)
+    #     move_balls(balls, bin.balls)
+    # end
+    total_balls = sum([sum(values(urn.balls)) for urn in bin.urns])
+    ball_idx = rand(1:total_balls)
+    running_ball_count = 0
+    for urn in bin.urns
+        running_ball_count += sum(values(urn.balls))
+        if running_ball_count >= ball_idx
+            balls = pull_ball(urn)
+            move_balls(balls, bin.balls)
+            break
+        end
     end
 end
 
