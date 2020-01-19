@@ -10,7 +10,7 @@ export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_b
 """
 Urn for holding balls.
 """
-type Urn
+struct Urn
     name::AbstractString
     balls::Dict{AbstractString, Int64}
     Urn(name::AbstractString) = new(name, Dict())
@@ -21,13 +21,13 @@ end
 """
 Temporary holding bin for balls that have been removed from Urns.
 """
-type EventBin
+struct EventBin
     name::AbstractString
     balls::Dict{AbstractString, Int64}
     urns::Array{Urn, 1}
     # actions: Array of action commands of the form
     #   ("action_to_perform", Urn, "ball_class")
-    actions::Array{Tuple{AbstractString, Union{Urn, Void}, Any}, 1}
+    actions::Array{Tuple{AbstractString, Union{Urn, Nothing}, Any}, 1}
     EventBin(name::AbstractString, balls, urns, actions) = new(name, balls, urns, actions)
 end
 
@@ -170,7 +170,7 @@ end
 Simulator that steps through a sequence of actions involving pulling
 balls from Urns and then placing them in Urns or discarding them.
 """
-type UrnSimulator
+struct UrnSimulator
     urns::Array{Urn, 1}
     events::Array{EventBin, 1}
 end
@@ -222,7 +222,7 @@ end
 
 """
 """
-type ProbArray
+struct ProbArray
     event_weights::Array{EventBin, 1}
 end
 
