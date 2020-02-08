@@ -1,9 +1,10 @@
 # John Eargle (mailto: jeargle at gmail.com)
-# 2016-2018
 # test
 
 using urnitol
 
+using DataStructures
+using Printf
 
 function test_urn()
     println("***")
@@ -11,8 +12,8 @@ function test_urn()
     println("***")
 
     urn1 = Urn("urnie")
-    urn2 = Urn("bert", Dict("black" => 2, "white" => 3))
-    urn3 = Urn("sesame", Dict("black" => 20, "white" => 30))
+    urn2 = Urn("bert", OrderedDict("black" => 2, "white" => 3))
+    urn3 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
 
     println(urn1)
     println(urn2)
@@ -20,8 +21,8 @@ function test_urn()
     println()
 
     println("*** balls")
-    balls1 = Dict("black" => 3, "white" => 2)
-    balls2 = Dict("black" => 4, "white" => 5)
+    balls1 = OrderedDict("black" => 3, "white" => 2)
+    balls2 = OrderedDict("black" => 4, "white" => 5)
 
     println("  balls1: ", balls1)
     println("  balls2: ", balls2)
@@ -51,81 +52,81 @@ function test_eventbin()
     println("***")
 
     urn1 = Urn("urnie")
-    urn2 = Urn("sesame", Dict("black" => 20, "white" => 30))
-    ebin1 = EventBin("bin1", Dict("black" => 0), [urn1], [])
-    ebin2 = EventBin("bin2", Dict("black" => 0, "white" => 0),
+    urn2 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
+    ebin1 = EventBin("bin1", OrderedDict("black" => 0), [urn1], [])
+    ebin2 = EventBin("bin2", OrderedDict("black" => 0, "white" => 0),
                      [urn2], [("move", urn1, nothing)])
 
 
     println("*** pull")
-    println("urn2: ", urn2.balls)
+    @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
     for i in 1:10
         pull(ebin2)
-        println("urn2: ", urn2.balls)
+        @printf "%s\n" repr(urn2)
         println("ebin2: ", ebin2.balls)
     end
     println()
 
     println("*** pull and act")
-    println("urn2: ", urn2.balls)
+    @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
-    println("urn1: ", urn1.balls)
+    @printf "%s\n" repr(urn1)
     for i in 1:10
         pull(ebin2)
         act(ebin2)
-        println("urn2: ", urn2.balls)
+        @printf "%s\n" repr(urn2)
         # println("ebin2: ", ebin2.balls)
-        println("urn1: ", urn1.balls)
+        @printf "%s\n" repr(urn1)
     end
     println()
 end
 
 function test_urnsimulator1()
     println("***")
-    println("*** UrnSimulator")
+    println("*** UrnSimulator 1")
     println("***")
 
-    urn1 = Urn("snuffy", Dict("black" => 30, "white" => 30))
-    urn2 = Urn("bird", Dict("black" => 0, "white" => 0))
+    urn1 = Urn("snuffy", OrderedDict("black" => 30, "white" => 30))
+    urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
-                     Dict("black" => 0, "white" => 0),
+                     OrderedDict("black" => 0, "white" => 0),
                      [urn1],
                      [("move", urn2, "black"),
                       ("discard", nothing, "white")])
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     numsteps = 20
-    println("urn1: ", urn1.balls)
-    println("urn2: ", urn2.balls)
+    @printf "%s\n" repr(urn1)
+    @printf "%s\n" repr(urn2)
     for i in 1:numsteps
         step_sim(us1)
-        println("urn1: ", urn1.balls)
-        println("urn2: ", urn2.balls)
+        @printf "%s\n" repr(urn1)
+        @printf "%s\n" repr(urn2)
     end
 end
 
 function test_urnsimulator2()
     println("***")
-    println("*** UrnSimulator")
+    println("*** UrnSimulator 2")
     println("***")
 
-    urn1 = Urn("snuffy", Dict("black" => 10, "white" => 0))
-    urn2 = Urn("bird", Dict("black" =>0, "white" => 10))
+    urn1 = Urn("snuffy", OrderedDict("black" => 10, "white" => 0))
+    urn2 = Urn("bird", OrderedDict("black" =>0, "white" => 10))
     ebin1 = EventBin("bin1",
-                     Dict("black" => 0, "white" => 0),
+                     OrderedDict("black" => 0, "white" => 0),
                      [urn1, urn2],
                      [("move", urn1, "white"),
                       ("move", urn2, "black")])
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     numsteps = 30
-    println("urn1: ", urn1.balls)
-    println("urn2: ", urn2.balls)
+    @printf "%s\n" repr(urn1)
+    @printf "%s\n" repr(urn2)
     for i in 1:numsteps
         step_sim(us1)
-        println("urn1: ", urn1.balls)
-        println("urn2: ", urn2.balls)
+        @printf "%s\n" repr(urn1)
+        @printf "%s\n" repr(urn2)
     end
 end
 

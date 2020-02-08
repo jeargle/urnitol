@@ -1,20 +1,24 @@
 # John Eargle (mailto: jeargle at gmail.com)
-# 2016-2018
 # urnitol
 
 module urnitol
 
 export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, choose_event
 
+using DataStructures
 
 """
 Urn for holding balls.
 """
 struct Urn
     name::AbstractString
-    balls::Dict{AbstractString, Int64}
-    Urn(name::AbstractString) = new(name, Dict())
+    balls::OrderedDict{AbstractString, Int64}
+    Urn(name::AbstractString) = new(name, OrderedDict{AbstractString, Int64}())
     Urn(name::AbstractString, balls) = new(name, balls)
+end
+
+function Base.show(io::IO, urn::Urn)
+    print(io, string(urn.name * " -- " * join([k * ": " * string(v) for (k, v) in urn.balls], ", ")))
 end
 
 
@@ -23,7 +27,7 @@ Temporary holding bin for balls that have been removed from Urns.
 """
 struct EventBin
     name::AbstractString
-    balls::Dict{AbstractString, Int64}
+    balls::OrderedDict{AbstractString, Int64}
     urns::Array{Urn, 1}
     # actions: Array of action commands of the form
     #   ("action_to_perform", Urn, "ball_class")
@@ -42,7 +46,7 @@ Move balls from one collection into another.
 - balls2: collection to receive balls
 - class: single class of ball to move; nothing uses all classes
 """
-function move_balls(balls1::Dict, balls2::Dict; class=nothing)
+function move_balls(balls1::OrderedDict, balls2::OrderedDict; class=nothing)
     if class == nothing
         classes = keys(balls1)
     else
@@ -69,7 +73,7 @@ Move balls from one collection to a discard bin.
 - discard: collection to receive balls
 - class: single class of ball to move; nothing uses all classes
 """
-function discard_balls(balls::Dict; discard=nothing, class=nothing)
+function discard_balls(balls::OrderedDict; discard=nothing, class=nothing)
 
     if discard == nothing
         if class == nothing
@@ -99,7 +103,7 @@ function pull_ball(urn::Urn)
     total_balls = sum(values(urn.balls))
     ball_idx = rand(1:total_balls)
     ball_count = 0
-    chosen_balls = Dict()
+    chosen_balls = OrderedDict()
     for i in keys(urn.balls)
         ball_count += urn.balls[i]
         if ball_count >= ball_idx
@@ -149,7 +153,7 @@ no balls left in the EventBin.
 - bin: EventBin that will perform its actions
 """
 function act(bin::EventBin)
-    println("act")
+    println("act EventBin")
     for (command, urn, class) in bin.actions
         println("  ", command)
         if command == "move"
@@ -215,6 +219,20 @@ Calculate one timestep of an UrnSimulator.
 - sim: UrnSimulator that will be stepped forward
 """
 function step_sim(sim::UrnSimulator)
+    pull(sim)
+    act(sim)
+end
+
+
+"""
+    state_string(sim)
+
+Generate a state string for an UrnSimulator.
+
+# Arguments
+- sim: UrnSimulator that will be stepped forward
+"""
+function state_string(sim::UrnSimulator)
     pull(sim)
     act(sim)
 end
