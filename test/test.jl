@@ -7,9 +7,11 @@ using DataStructures
 using Printf
 
 function test_urn()
+    println("\n")
     println("***")
     println("*** Urn")
     println("***")
+    println()
 
     urn1 = Urn("urnie")
     urn2 = Urn("bert", OrderedDict("black" => 2, "white" => 3))
@@ -47,9 +49,11 @@ function test_urn()
 end
 
 function test_eventbin()
+    println("\n")
     println("***")
     println("*** EventBin")
     println("***")
+    println()
 
     urn1 = Urn("urnie")
     urn2 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
@@ -83,9 +87,11 @@ function test_eventbin()
 end
 
 function test_urnsimulator1()
+    println("\n")
     println("***")
     println("*** UrnSimulator 1")
     println("***")
+    println()
 
     urn1 = Urn("snuffy", OrderedDict("black" => 30, "white" => 30))
     urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
@@ -97,19 +103,18 @@ function test_urnsimulator1()
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     numsteps = 20
-    @printf "%s\n" repr(urn1)
-    @printf "%s\n" repr(urn2)
+    @printf "%s\n" repr(us1)
     for i in 1:numsteps
         step_sim(us1)
-        @printf "%s\n" repr(urn1)
-        @printf "%s\n" repr(urn2)
+        @printf "%s\n" repr(us1)
     end
 end
 
 function test_urnsimulator2()
-    println("***")
+    println("\n")
     println("*** UrnSimulator 2")
     println("***")
+    println()
 
     urn1 = Urn("snuffy", OrderedDict("black" => 10, "white" => 0))
     urn2 = Urn("bird", OrderedDict("black" =>0, "white" => 10))
@@ -121,12 +126,10 @@ function test_urnsimulator2()
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     numsteps = 30
-    @printf "%s\n" repr(urn1)
-    @printf "%s\n" repr(urn2)
+    @printf "%s\n" repr(us1)
     for i in 1:numsteps
         step_sim(us1)
-        @printf "%s\n" repr(urn1)
-        @printf "%s\n" repr(urn2)
+        @printf "%s\n" repr(us1)
     end
 end
 

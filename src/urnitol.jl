@@ -174,9 +174,16 @@ end
 Simulator that steps through a sequence of actions involving pulling
 balls from Urns and then placing them in Urns or discarding them.
 """
-struct UrnSimulator
+mutable struct UrnSimulator
     urns::Array{Urn, 1}
     events::Array{EventBin, 1}
+    step_count::Int64
+    UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}) = new(urns, events, 0)
+    UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64) = new(urns, events, step_count)
+end
+
+function Base.show(io::IO, sim::UrnSimulator)
+    print(io, "step " * string(sim.step_count) * "\n" * join(["  " * repr(urn) for urn in sim.urns], '\n'))
 end
 
 
@@ -219,20 +226,7 @@ Calculate one timestep of an UrnSimulator.
 - sim: UrnSimulator that will be stepped forward
 """
 function step_sim(sim::UrnSimulator)
-    pull(sim)
-    act(sim)
-end
-
-
-"""
-    state_string(sim)
-
-Generate a state string for an UrnSimulator.
-
-# Arguments
-- sim: UrnSimulator that will be stepped forward
-"""
-function state_string(sim::UrnSimulator)
+    sim.step_count += 1
     pull(sim)
     act(sim)
 end
