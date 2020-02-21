@@ -6,6 +6,8 @@ module urnitol
 export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, choose_event
 
 using DataStructures
+using YAML
+
 
 """
 Urn for holding balls.
