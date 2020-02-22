@@ -273,10 +273,10 @@ end
 """
     setup_sim(filename)
 
-Create an UrnSimulator from a setup YAML file.
+Create an UrnSimulator from a YAML setup file.
 
 # Arguments
-- filename: name of setup YAML file
+- filename: name of YAML setup file
 """
 function setup_sim(filename)
     setup = YAML.load(open(filename))
