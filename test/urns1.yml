@@ -22,11 +22,11 @@ event_bins:
         num: 0
       - class: white
         num: 0
-  - source_urns:
-    - snuffy
-  - actions:
-    - action: move
-      urn: bird
-      class: black
-    - action: discard
-      class: white
+    source_urns:
+      - snuffy
+    actions:
+      - type: move
+        urn: bird
+        class: black
+      - type: discard
+        class: white

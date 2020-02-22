@@ -281,6 +281,61 @@ Create an UrnSimulator from a setup YAML file.
 function setup_sim(filename)
     setup = YAML.load(open(filename))
 
+    num_steps = 0
+    if haskey(setup, "num_steps")
+        num_steps = setup["num_steps"]
+    end
+
+    # build Urns
+    urns = Array{Urn, 1}()
+    name_to_urn = Dict()
+    if haskey(setup, "urns")
+        for urn_info in setup["urns"]
+            name = urn_info["name"]
+            balls = OrderedDict()
+            for ball_info in urn_info["balls"]
+                balls[ball_info["class"]] = ball_info["num"]
+            end
+            urn = Urn(name, balls)
+            push!(urns, urn)
+            name_to_urn[name] = urn
+        end
+    end
+
+    # build EventBins
+    bins = Array{EventBin, 1}()
+    if haskey(setup, "event_bins")
+        for bin_info in setup["event_bins"]
+            name = bin_info["name"]
+
+            balls = OrderedDict()
+            for ball_info in bin_info["balls"]
+                balls[ball_info["class"]] = ball_info["num"]
+            end
+
+            bin_urns = []
+            for urn_name in bin_info["source_urns"]
+                push!(bin_urns, name_to_urn[urn_name])
+            end
+
+            actions = []
+            for action_info in bin_info["actions"]
+                action_type = action_info["type"]
+                ball_class = action_info["class"]
+                urn = nothing
+                if haskey(action_info, "urn")
+                    urn = name_to_urn[action_info["urn"]]
+                end
+                action = (action_type, urn, ball_class)
+                push!(actions, action)
+            end
+
+            bin = EventBin(name, balls, bin_urns, actions)
+            push!(bins, bin)
+        end
+    end
+
+    return (UrnSimulator(urns, bins), num_steps)
 end
 
 
