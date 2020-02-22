@@ -3,9 +3,10 @@
 
 module urnitol
 
-export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, choose_event
+export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
 
 using DataStructures
+using Printf
 using YAML
 
 
@@ -235,6 +236,23 @@ end
 
 
 """
+    run_sim(sim, num_steps)
+
+Calculate multiple timesteps of an UrnSimulator.
+
+# Arguments
+- sim: UrnSimulator that will be stepped forward
+"""
+function run_sim(sim::UrnSimulator, num_steps)
+    @printf "%s\n" repr(sim)
+    for i in 1:num_steps
+        step_sim(sim)
+        @printf "%s\n" repr(sim)
+    end
+end
+
+
+"""
 """
 struct ProbArray
     event_weights::Array{EventBin, 1}
@@ -249,6 +267,20 @@ end
 """
 function choose_event(prob)
     return rand(prob.event_weights)
+end
+
+
+"""
+    setup_sim(filename)
+
+Create an UrnSimulator from a setup YAML file.
+
+# Arguments
+- filename: name of setup YAML file
+"""
+function setup_sim(filename)
+    setup = YAML.load(open(filename))
+
 end
 
 

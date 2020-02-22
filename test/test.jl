@@ -102,9 +102,9 @@ function test_urnsimulator1()
                       ("discard", nothing, "white")])
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
-    numsteps = 20
+    num_steps = 20
     @printf "%s\n" repr(us1)
-    for i in 1:numsteps
+    for i in 1:num_steps
         step_sim(us1)
         @printf "%s\n" repr(us1)
     end
@@ -125,20 +125,25 @@ function test_urnsimulator2()
                       ("move", urn2, "black")])
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
-    numsteps = 30
-    @printf "%s\n" repr(us1)
-    for i in 1:numsteps
-        step_sim(us1)
-        @printf "%s\n" repr(us1)
-    end
+    num_steps = 30
+    run_sim(us1, num_steps)
 end
 
+function test_urnsimulator3()
+    println("\n")
+    println("*** UrnSimulator 3")
+    println("***")
+    println()
+
+    setup_sim("urns1.yml")
+end
 
 function main()
     test_urn()
     test_eventbin()
     test_urnsimulator1()
     test_urnsimulator2()
+    test_urnsimulator3()
 end
 
 main()
