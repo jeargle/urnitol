@@ -136,6 +136,7 @@ function pull(bin::EventBin)
         running_ball_count += sum(values(urn.balls))
         if running_ball_count >= ball_idx
             balls = pull_ball(urn)
+            @printf "  pull %s %s\n" urn.name repr(balls)
             move_balls(balls, bin.balls)
             break
         end
@@ -156,7 +157,7 @@ no balls left in the EventBin.
 - bin: EventBin that will perform its actions
 """
 function act(bin::EventBin)
-    println("act EventBin")
+    # println("act EventBin")
     for (command, urn, class) in bin.actions
         println("  ", command)
         if command == "move"
@@ -294,7 +295,11 @@ function setup_sim(filename)
             name = urn_info["name"]
             balls = OrderedDict()
             for ball_info in urn_info["balls"]
-                balls[ball_info["class"]] = ball_info["num"]
+                ball_num = 0
+                if haskey(ball_info, "num")
+                    ball_num = ball_info["num"]
+                end
+                balls[ball_info["class"]] = ball_num
             end
             urn = Urn(name, balls)
             push!(urns, urn)
@@ -310,7 +315,11 @@ function setup_sim(filename)
 
             balls = OrderedDict()
             for ball_info in bin_info["balls"]
-                balls[ball_info["class"]] = ball_info["num"]
+                ball_num = 0
+                if haskey(ball_info, "num")
+                    ball_num = ball_info["num"]
+                end
+                balls[ball_info["class"]] = ball_num
             end
 
             bin_urns = []
@@ -321,10 +330,13 @@ function setup_sim(filename)
             actions = []
             for action_info in bin_info["actions"]
                 action_type = action_info["type"]
-                ball_class = action_info["class"]
                 urn = nothing
                 if haskey(action_info, "urn")
                     urn = name_to_urn[action_info["urn"]]
+                end
+                ball_class = nothing
+                if haskey(action_info, "class")
+                    ball_class = action_info["class"]
                 end
                 action = (action_type, urn, ball_class)
                 push!(actions, action)

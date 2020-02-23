@@ -1,0 +1,21 @@
+
+num_steps: 100
+
+urns:
+  - name: pi
+    balls:
+      - class: black
+        num: 22
+      - class: white
+        num: 7
+
+event_bins:
+  - name: bin1
+    balls:
+      - class: black
+      - class: white
+    source_urns:
+      - pi
+    actions:
+      - type: move
+        urn: pi

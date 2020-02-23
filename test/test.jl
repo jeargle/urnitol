@@ -141,12 +141,25 @@ function test_urnsimulator3()
     run_sim(sim, num_steps)
 end
 
+function test_urnsimulator4()
+    println("\n")
+    println("*** UrnSimulator 4")
+    println("***")
+    println()
+
+    sim, num_steps = setup_sim("urns2.yml")
+    @printf "sim: %s\n" repr(sim)
+    @printf "num_steps: %d\n" num_steps
+    run_sim(sim, num_steps)
+end
+
 function main()
     test_urn()
     test_eventbin()
     test_urnsimulator1()
     test_urnsimulator2()
     test_urnsimulator3()
+    test_urnsimulator4()
 end
 
 main()
