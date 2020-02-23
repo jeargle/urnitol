@@ -7,7 +7,11 @@ Urn and ball simulator inspired by all the crazy probability models that use urn
 General
 -------
 
-Urn simulations are set up and run through UrnSimulators which consist of arrays of Urns and EventBins.  Urns start with populations of balls from one or more classes.  EventBins are structures where balls are collected and then acted upon in some way.
+Urn and ball models are used as simple probabilistic systems that are easy to describe and think about.  The basic idea is that you start with a set of urns, and each urn can contain zero or more colored balls.  Then someone picks an urn and pulls a random ball out.  At that point they see the ball's color and take a further action that may or may not depend on the color.
+
+For example, you could simulate a die by having one urn that contains 6 balls where each ball is a different color.  Then a round would be "pull with replacement" where you select a ball, note its color, and then put it back in the urn.
+
+In urnitol Urn simulations are set up and run through UrnSimulators which consist of arrays of Urns and EventBins.  Urns start with populations of balls from one or more classes.  EventBins are structures where balls are collected and then acted upon in some way.
 
 So the 2-step simulation loop goes:
 
@@ -56,6 +60,7 @@ Example YAML setup file:
           - type: discard
             class: white
 
+This file specifies two Urns with the names "snuffy" and "bird".  Snuffy has 30 black balls and 30 white balls while bird has none.  There is a single EventBin that randomly pulls balls from snuffy and then either moves them to bird if they are black or discards them if they are white.
 
 Dependencies
 ------------
