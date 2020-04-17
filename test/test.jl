@@ -6,12 +6,16 @@ using urnitol
 using DataStructures
 using Printf
 
-function test_urn()
+function print_test_header(title)
     println("\n")
     println("***")
-    println("*** Urn")
+    println("*** ", title)
     println("***")
     println()
+end
+
+function test_urn()
+    print_test_header("Urn")
 
     urn1 = Urn("urnie")
     urn2 = Urn("bert", OrderedDict("black" => 2, "white" => 3))
@@ -49,11 +53,7 @@ function test_urn()
 end
 
 function test_eventbin()
-    println("\n")
-    println("***")
-    println("*** EventBin")
-    println("***")
-    println()
+    print_test_header("EventBin")
 
     urn1 = Urn("urnie")
     urn2 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
@@ -87,11 +87,7 @@ function test_eventbin()
 end
 
 function test_urnsimulator1()
-    println("\n")
-    println("***")
-    println("*** UrnSimulator 1")
-    println("***")
-    println()
+    print_test_header("UrnSimulator 1")
 
     urn1 = Urn("snuffy", OrderedDict("black" => 30, "white" => 30))
     urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
@@ -111,10 +107,7 @@ function test_urnsimulator1()
 end
 
 function test_urnsimulator2()
-    println("\n")
-    println("*** UrnSimulator 2")
-    println("***")
-    println()
+    print_test_header("UrnSimulator 2")
 
     urn1 = Urn("snuffy", OrderedDict("black" => 10, "white" => 0))
     urn2 = Urn("bird", OrderedDict("black" =>0, "white" => 10))
@@ -130,10 +123,7 @@ function test_urnsimulator2()
 end
 
 function test_urnsimulator3()
-    println("\n")
-    println("*** UrnSimulator 3")
-    println("***")
-    println()
+    print_test_header("UrnSimulator 3")
 
     sim, num_steps = setup_sim("urns1.yml")
     @printf "sim: %s\n" repr(sim)
@@ -142,10 +132,7 @@ function test_urnsimulator3()
 end
 
 function test_urnsimulator4()
-    println("\n")
-    println("*** UrnSimulator 4")
-    println("***")
-    println()
+    print_test_header("UrnSimulator 4")
 
     sim, num_steps = setup_sim("urns2.yml")
     @printf "sim: %s\n" repr(sim)
