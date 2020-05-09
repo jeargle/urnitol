@@ -139,7 +139,7 @@ function pull(bin::EventBin)
         urn_idx = rand(1:length(bin.urns))
         urn = bin.urns[urn_idx]
         balls = pull_ball(urn)
-        @printf "  pull %s %s\n" urn.name repr(balls)
+        @printf "    pull %s %s\n" urn.name repr(balls)
         move_balls(balls, bin.balls)
     elseif bin.source_odds == proportional
         total_balls = sum([sum(values(urn.balls)) for urn in bin.urns])
@@ -149,7 +149,7 @@ function pull(bin::EventBin)
             running_ball_count += sum(values(urn.balls))
             if running_ball_count >= ball_idx
                 balls = pull_ball(urn)
-                @printf "  pull %s %s\n" urn.name repr(balls)
+                @printf "    pull %s %s\n" urn.name repr(balls)
                 move_balls(balls, bin.balls)
                 break
             end
@@ -171,12 +171,16 @@ no balls left in the EventBin.
 - bin: EventBin that will perform its actions
 """
 function act(bin::EventBin)
-    # println("act EventBin")
     for (command, urn, class) in bin.actions
-        println("  ", command)
         if command == "move"
+            if class != nothing && bin.balls[class] > 0
+                @printf "    move %s %s\n" class repr(bin.balls[class])
+            end
             move_balls(bin.balls, urn.balls, class=class)
         elseif command == "discard"
+            if class != nothing && bin.balls[class] > 0
+                @printf "    discard %s %s\n" class repr(bin.balls[class])
+            end
             if urn == nothing
                 discard_balls(bin.balls, class=class)
             else
@@ -355,7 +359,18 @@ function setup_sim(filename)
                 push!(actions, action)
             end
 
-            bin = EventBin(name, balls, bin_urns, actions)
+            source_odds = even
+            if haskey(bin_info, "source_odds")
+                if bin_info["source_odds"] == "even"
+                    source_odds = even
+                elseif bin_info["source_odds"] == "proportional"
+                    source_odds = proportional
+                else
+                    throw(DomainError(bin_info["source_odds"], "source_odds must be either \"even\" or \"proportional\""))
+                end
+            end
+
+            bin = EventBin(name, balls, bin_urns, actions, source_odds)
             push!(bins, bin)
         end
     end

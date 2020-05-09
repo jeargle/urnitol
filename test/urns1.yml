@@ -24,9 +24,11 @@ event_bins:
         num: 0
     source_urns:
       - snuffy
+      - bird
     actions:
       - type: move
         urn: bird
         class: black
       - type: discard
         class: white
+    source_odds: proportional
