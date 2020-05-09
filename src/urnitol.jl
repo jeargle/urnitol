@@ -16,8 +16,8 @@ Urn for holding balls.
 struct Urn
     name::AbstractString
     balls::OrderedDict{AbstractString, Int64}
-    Urn(name::AbstractString) = new(name, OrderedDict{AbstractString, Int64}())
-    Urn(name::AbstractString, balls) = new(name, balls)
+    # Urn(name::AbstractString) = new(name, OrderedDict{AbstractString, Int64}())
+    Urn(name::AbstractString, balls=OrderedDict{AbstractString, Int64}()) = new(name, balls)
 end
 
 function Base.show(io::IO, urn::Urn)
@@ -124,6 +124,8 @@ end
     pull(bin)
 
 Pull balls from Urns and move them into an EventBin.
+The probability that an Urn is chosen is proportional to the number of
+balls in the Urn.
 
 # Arguments
 - bin: EventBin that will pull balls from its Urns
@@ -182,8 +184,7 @@ mutable struct UrnSimulator
     urns::Array{Urn, 1}
     events::Array{EventBin, 1}
     step_count::Int64
-    UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}) = new(urns, events, 0)
-    UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64) = new(urns, events, step_count)
+    UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0) = new(urns, events, step_count)
 end
 
 function Base.show(io::IO, sim::UrnSimulator)
