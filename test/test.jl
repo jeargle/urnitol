@@ -93,9 +93,10 @@ function test_urnsimulator1()
     urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
                      OrderedDict("black" => 0, "white" => 0),
-                     [urn1],
+                     [urn1, urn2],
                      [("move", urn2, "black"),
-                      ("discard", nothing, "white")])
+                      ("discard", nothing, "white")],
+                     proportional)
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     num_steps = 20

@@ -3,7 +3,7 @@
 
 module urnitol
 
-export Urn, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
+export Urn, SourceOdds, even, proportional, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
 
 using DataStructures
 using Printf
@@ -16,7 +16,6 @@ Urn for holding balls.
 struct Urn
     name::AbstractString
     balls::OrderedDict{AbstractString, Int64}
-    # Urn(name::AbstractString) = new(name, OrderedDict{AbstractString, Int64}())
     Urn(name::AbstractString, balls=OrderedDict{AbstractString, Int64}()) = new(name, balls)
 end
 
@@ -28,6 +27,8 @@ end
 """
 Temporary holding bin for balls that have been removed from Urns.
 """
+@enum SourceOdds even proportional
+
 struct EventBin
     name::AbstractString
     balls::OrderedDict{AbstractString, Int64}
@@ -35,7 +36,8 @@ struct EventBin
     # actions: Array of action commands of the form
     #   ("action_to_perform", Urn, "ball_class")
     actions::Array{Tuple{AbstractString, Union{Urn, Nothing}, Any}, 1}
-    EventBin(name::AbstractString, balls, urns, actions) = new(name, balls, urns, actions)
+    source_odds::SourceOdds
+    EventBin(name::AbstractString, balls, urns, actions, source_odds=even) = new(name, balls, urns, actions, source_odds)
 end
 
 
@@ -103,16 +105,18 @@ Pull a ball out of an Urn.
 - urn: Urn from which to pull a ball
 """
 function pull_ball(urn::Urn)
-    total_balls = sum(values(urn.balls))
-    ball_idx = rand(1:total_balls)
-    ball_count = 0
     chosen_balls = OrderedDict()
-    for i in keys(urn.balls)
-        ball_count += urn.balls[i]
-        if ball_count >= ball_idx
-            urn.balls[i] -= 1
-            chosen_balls[i] = 1
-            break
+    total_balls = sum(values(urn.balls))
+    if total_balls > 0
+        ball_idx = rand(1:total_balls)
+        ball_count = 0
+        for i in keys(urn.balls)
+            ball_count += urn.balls[i]
+            if ball_count >= ball_idx
+                urn.balls[i] -= 1
+                chosen_balls[i] = 1
+                break
+            end
         end
     end
 
@@ -131,16 +135,24 @@ balls in the Urn.
 - bin: EventBin that will pull balls from its Urns
 """
 function pull(bin::EventBin)
-    total_balls = sum([sum(values(urn.balls)) for urn in bin.urns])
-    ball_idx = rand(1:total_balls)
-    running_ball_count = 0
-    for urn in bin.urns
-        running_ball_count += sum(values(urn.balls))
-        if running_ball_count >= ball_idx
-            balls = pull_ball(urn)
-            @printf "  pull %s %s\n" urn.name repr(balls)
-            move_balls(balls, bin.balls)
-            break
+    if bin.source_odds == even
+        urn_idx = rand(1:length(bin.urns))
+        urn = bin.urns[urn_idx]
+        balls = pull_ball(urn)
+        @printf "  pull %s %s\n" urn.name repr(balls)
+        move_balls(balls, bin.balls)
+    elseif bin.source_odds == proportional
+        total_balls = sum([sum(values(urn.balls)) for urn in bin.urns])
+        ball_idx = rand(1:total_balls)
+        running_ball_count = 0
+        for urn in bin.urns
+            running_ball_count += sum(values(urn.balls))
+            if running_ball_count >= ball_idx
+                balls = pull_ball(urn)
+                @printf "  pull %s %s\n" urn.name repr(balls)
+                move_balls(balls, bin.balls)
+                break
+            end
         end
     end
 end
