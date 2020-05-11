@@ -200,7 +200,25 @@ mutable struct UrnSimulator
     urns::Array{Urn, 1}
     events::Array{EventBin, 1}
     step_count::Int64
-    UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0) = new(urns, events, step_count)
+    function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
+        # Normalize ball classes across Urns
+        classes = Set{AbstractString}()
+        for urn in urns
+            for (class, count) in urn.balls
+                push!(classes, class)
+            end
+        end
+
+        for urn in urns
+            for class in classes
+                if !(class in keys(urn.balls))
+                    urn.balls[class] = 0
+                end
+            end
+        end
+
+        new(urns, events, step_count)
+    end
 end
 
 function Base.show(io::IO, sim::UrnSimulator)
@@ -310,14 +328,18 @@ function setup_sim(filename)
     if haskey(setup, "urns")
         for urn_info in setup["urns"]
             name = urn_info["name"]
+
             balls = OrderedDict()
-            for ball_info in urn_info["balls"]
-                ball_num = 0
-                if haskey(ball_info, "num")
-                    ball_num = ball_info["num"]
+            if haskey(urn_info, "balls")
+                for ball_info in urn_info["balls"]
+                    ball_num = 0
+                    if haskey(ball_info, "num")
+                        ball_num = ball_info["num"]
+                    end
+                    balls[ball_info["class"]] = ball_num
                 end
-                balls[ball_info["class"]] = ball_num
             end
+
             urn = Urn(name, balls)
             push!(urns, urn)
             name_to_urn[name] = urn
