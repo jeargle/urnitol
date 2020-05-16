@@ -37,7 +37,24 @@ struct EventBin
     #   ("action_to_perform", Urn, "ball_class")
     actions::Array{Tuple{AbstractString, Union{Urn, Nothing}, Any}, 1}
     source_odds::SourceOdds
-    EventBin(name::AbstractString, balls, urns, actions, source_odds=even) = new(name, balls, urns, actions, source_odds)
+    function EventBin(name::AbstractString, urns, actions, source_odds=even)
+        # Normalize ball classes across Urns
+        classes = Set{AbstractString}()
+        for urn in urns
+            for (class, count) in urn.balls
+                push!(classes, class)
+            end
+        end
+
+        balls = OrderedDict{AbstractString, Int64}()
+        for class in classes
+            if !(class in keys(balls))
+                balls[class] = 0
+            end
+        end
+
+        new(name, balls, urns, actions, source_odds)
+    end
 end
 
 
@@ -352,15 +369,6 @@ function setup_sim(filename)
         for bin_info in setup["event_bins"]
             name = bin_info["name"]
 
-            balls = OrderedDict()
-            for ball_info in bin_info["balls"]
-                ball_num = 0
-                if haskey(ball_info, "num")
-                    ball_num = ball_info["num"]
-                end
-                balls[ball_info["class"]] = ball_num
-            end
-
             bin_urns = []
             for urn_name in bin_info["source_urns"]
                 push!(bin_urns, name_to_urn[urn_name])
@@ -392,7 +400,7 @@ function setup_sim(filename)
                 end
             end
 
-            bin = EventBin(name, balls, bin_urns, actions, source_odds)
+            bin = EventBin(name, bin_urns, actions, source_odds)
             push!(bins, bin)
         end
     end

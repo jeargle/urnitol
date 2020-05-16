@@ -57,9 +57,8 @@ function test_eventbin()
 
     urn1 = Urn("urnie")
     urn2 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
-    ebin1 = EventBin("bin1", OrderedDict("black" => 0), [urn1], [])
-    ebin2 = EventBin("bin2", OrderedDict("black" => 0, "white" => 0),
-                     [urn2], [("move", urn1, nothing)])
+    ebin1 = EventBin("bin1", [urn1], [])
+    ebin2 = EventBin("bin2", [urn2], [("move", urn1, nothing)])
 
 
     println("*** pull")
@@ -92,7 +91,6 @@ function test_urnsimulator1()
     urn1 = Urn("snuffy", OrderedDict("black" => 30, "white" => 30))
     urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
-                     OrderedDict("black" => 0, "white" => 0),
                      [urn1, urn2],
                      [("move", urn2, "black"),
                       ("discard", nothing, "white")],
@@ -113,7 +111,6 @@ function test_urnsimulator2()
     urn1 = Urn("snuffy", OrderedDict("black" => 10, "white" => 0))
     urn2 = Urn("bird", OrderedDict("black" =>0, "white" => 10))
     ebin1 = EventBin("bin1",
-                     OrderedDict("black" => 0, "white" => 0),
                      [urn1, urn2],
                      [("move", urn1, "white"),
                       ("move", urn2, "black")])
