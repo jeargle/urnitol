@@ -11,9 +11,6 @@ urns:
 
 event_bins:
   - name: bin1
-    balls:
-      - class: black
-      - class: white
     source_urns:
       - pi
     actions:

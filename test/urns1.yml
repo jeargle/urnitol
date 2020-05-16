@@ -12,11 +12,6 @@ urns:
 
 event_bins:
   - name: bin1
-    balls:
-      - class: black
-        num: 0
-      - class: white
-        num: 0
     source_urns:
       - snuffy
       - bird
