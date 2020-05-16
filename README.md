@@ -38,19 +38,9 @@ Example YAML setup file:
           - class: white
             num: 30
       - name: bird
-        balls:
-          - class: black
-            num: 0
-          - class: white
-            num: 0
 
     event_bins:
       - name: bin1
-        balls:
-          - class: black
-            num: 0
-          - class: white
-            num: 0
         source_urns:
           - snuffy
         actions:
