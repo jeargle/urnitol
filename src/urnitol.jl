@@ -370,8 +370,27 @@ function setup_sim(filename)
             name = bin_info["name"]
 
             bin_urns = []
-            for urn_name in bin_info["source_urns"]
-                push!(bin_urns, name_to_urn[urn_name])
+            if bin_info["source_urns"] isa Array
+                for urn_name in bin_info["source_urns"]
+                    push!(bin_urns, name_to_urn[urn_name])
+                end
+            elseif bin_info["source_urns"] == "all"
+                for urn in urns
+                    push!(bin_urns, urn)
+                end
+            else
+                push!(bin_urns, name_to_urn[bin_info["source_urns"]])
+            end
+
+            source_odds = even
+            if haskey(bin_info, "source_odds")
+                if bin_info["source_odds"] == "even"
+                    source_odds = even
+                elseif bin_info["source_odds"] == "proportional"
+                    source_odds = proportional
+                else
+                    throw(DomainError(bin_info["source_odds"], "source_odds must be either \"even\" or \"proportional\""))
+                end
             end
 
             actions = []
@@ -387,17 +406,6 @@ function setup_sim(filename)
                 end
                 action = (action_type, urn, ball_class)
                 push!(actions, action)
-            end
-
-            source_odds = even
-            if haskey(bin_info, "source_odds")
-                if bin_info["source_odds"] == "even"
-                    source_odds = even
-                elseif bin_info["source_odds"] == "proportional"
-                    source_odds = proportional
-                else
-                    throw(DomainError(bin_info["source_odds"], "source_odds must be either \"even\" or \"proportional\""))
-                end
             end
 
             bin = EventBin(name, bin_urns, actions, source_odds)

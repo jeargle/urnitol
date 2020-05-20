@@ -12,13 +12,13 @@ urns:
 
 event_bins:
   - name: bin1
-    source_urns:
-      - snuffy
-      - bird
+    source_urns: all
+      # - snuffy
+      # - bird
+    source_odds: proportional
     actions:
       - type: move
         urn: bird
         class: black
       - type: discard
         class: white
-    source_odds: proportional

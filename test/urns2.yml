@@ -11,8 +11,7 @@ urns:
 
 event_bins:
   - name: bin1
-    source_urns:
-      - pi
+    source_urns: pi
     actions:
       - type: move
         urn: pi
