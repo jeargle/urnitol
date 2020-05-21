@@ -3,7 +3,7 @@
 
 module urnitol
 
-export Urn, SourceOdds, even, proportional, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
+export Urn, UrnOdds, even, proportional, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
 
 using DataStructures
 using Printf
@@ -24,11 +24,11 @@ function Base.show(io::IO, urn::Urn)
 end
 
 
+@enum UrnOdds even proportional
+
 """
 Temporary holding bin for balls that have been removed from Urns.
 """
-@enum SourceOdds even proportional
-
 struct EventBin
     name::AbstractString
     balls::OrderedDict{AbstractString, Int64}
@@ -36,7 +36,7 @@ struct EventBin
     # actions: Array of action commands of the form
     #   ("action_to_perform", Urn, "ball_class")
     actions::Array{Tuple{AbstractString, Union{Urn, Nothing}, Any}, 1}
-    source_odds::SourceOdds
+    source_odds::UrnOdds
     function EventBin(name::AbstractString, urns, actions, source_odds=even)
         # Normalize ball classes across Urns
         classes = Set{AbstractString}()
