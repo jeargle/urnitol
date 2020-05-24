@@ -58,14 +58,14 @@ function test_eventbin()
     urn1 = Urn("urnie")
     urn2 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
     ebin1 = EventBin("bin1", [urn1], [])
-    ebin2 = EventBin("bin2", [urn2], [("move", urn1, nothing)])
-
+    ebin2 = EventBin("bin2", [urn2], [Action("move", [urn1], "", nothing)])
 
     println("*** pull")
     @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
     for i in 1:10
-        pull(ebin2)
+        urn = select_urn(ebin2.urns, even)
+        pull(ebin2, urn)
         @printf "%s\n" repr(urn2)
         println("ebin2: ", ebin2.balls)
     end
@@ -76,8 +76,9 @@ function test_eventbin()
     println("ebin2: ", ebin2.balls)
     @printf "%s\n" repr(urn1)
     for i in 1:10
-        pull(ebin2)
-        act(ebin2)
+        urn = select_urn(ebin2.urns, even)
+        pull(ebin2, urn)
+        act(ebin2, urn)
         @printf "%s\n" repr(urn2)
         # println("ebin2: ", ebin2.balls)
         @printf "%s\n" repr(urn1)
@@ -92,8 +93,8 @@ function test_urnsimulator1()
     urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
                      [urn1, urn2],
-                     [("move", urn2, "black"),
-                      ("discard", nothing, "white")],
+                     [Action("move", [urn2], "", "black"),
+                      Action("discard", Array{Urn, 1}(), "", "white")],
                      proportional)
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
@@ -112,8 +113,8 @@ function test_urnsimulator2()
     urn2 = Urn("bird", OrderedDict("black" =>0, "white" => 10))
     ebin1 = EventBin("bin1",
                      [urn1, urn2],
-                     [("move", urn1, "white"),
-                      ("move", urn2, "black")])
+                     [Action("move", [urn1], "", "white"),
+                      Action("move", [urn2], "", "black")])
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     num_steps = 30

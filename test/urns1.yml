@@ -18,7 +18,7 @@ event_bins:
     source_odds: proportional
     actions:
       - type: move
-        urn: bird
+        target_urns: bird
         class: black
       - type: discard
         class: white

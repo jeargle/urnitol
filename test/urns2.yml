@@ -14,4 +14,4 @@ event_bins:
     source_urns: pi
     actions:
       - type: move
-        urn: pi
+        target_urns: pi

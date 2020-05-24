@@ -3,7 +3,7 @@
 
 module urnitol
 
-export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
+export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
 
 using DataStructures
 using Printf
@@ -34,10 +34,13 @@ struct Action
     command::AbstractString
     target_urns::Array{Urn, 1}
     target_string::AbstractString
-    class::AbstractString
+    class::Union{AbstractString, Nothing}
     target_odds::Odds
-    UrnAction(command::AbstractString, target_urns::Array{Urn, 1}, class, target_odds=even) = new(command, target_urns, "", class, target_odds)
-    UrnAction(command::AbstractString, target_string::AbstractString, class, target_odds=even) = new(command, [], target_string, class, target_odds)
+    Action(command::AbstractString,
+           target_urns::Array{Urn, 1},
+           target_string::AbstractString="",
+           class::Union{AbstractString, Nothing}=nothing,
+           target_odds=even) = new(command, target_urns, target_string, class, target_odds)
 end
 
 
@@ -48,9 +51,7 @@ struct EventBin
     name::AbstractString
     balls::OrderedDict{AbstractString, Int64}
     urns::Array{Urn, 1}
-    # actions: Array of action commands of the form
-    #   ("action_to_perform", Urn, "ball_class")
-    actions::Array{Tuple{AbstractString, Union{Urn, Nothing}, Any}, 1}
+    actions::Array{Action, 1}
     source_odds::Odds
     function EventBin(name::AbstractString, urns, actions, source_odds=even)
         # Normalize ball classes across Urns
@@ -70,6 +71,72 @@ struct EventBin
 
         new(name, balls, urns, actions, source_odds)
     end
+end
+
+
+"""
+    get_urns(action, source_urn)
+
+Fetch an array of Urns from an Action.
+
+# Arguments
+- action: Action from which Urn list is fetched
+- bin: EventBin with Array of source Urns
+- source_urn: Urn from which a ball was pulled
+
+# Returns
+- Array of Urns
+"""
+function get_urns(action::Action, bin::EventBin, source_urn::Urn)
+    if length(action.target_urns) > 0
+        urns = action.target_urns
+    elseif action.target_string == "all"
+        urns = bin.urns
+    elseif action.target_string == "source"
+        urns = [source_urn]
+    elseif action.target_string == "not source"
+        urns = [urn for urn in bin.urns if urn != source_urn]
+    else
+        urns = Array{Urn, 1}()
+    end
+
+    return urns
+end
+
+
+"""
+    select_urn(urns, odds)
+
+Select an Urn from an array of Urns.
+
+# Arguments
+- urns: Array of Urns to choose from
+- odds: Odds to use in selection
+
+# Returns
+- selected Urn or nothing if urns Array is empty
+"""
+function select_urn(urns::Array{Urn, 1}, odds::Odds)
+    selected_urn = nothing
+    if length(urns) == 0
+        selected_urn = nothing
+    elseif odds == even
+        urn_idx = rand(1:length(urns))
+        selected_urn = urns[urn_idx]
+    elseif odds == proportional
+        total_balls = sum([sum(values(urn.balls)) for urn in urns])
+        ball_idx = rand(1:total_balls)
+        running_ball_count = 0
+        for urn in urns
+            running_ball_count += sum(values(urn.balls))
+            if running_ball_count >= ball_idx
+                selected_urn = urn
+                break
+            end
+        end
+    end
+
+    return selected_urn
 end
 
 
@@ -135,6 +202,9 @@ Pull a ball out of an Urn.
 
 # Arguments
 - urn: Urn from which to pull a ball
+
+# Returns
+- OrderedDict of chosen balls
 """
 function pull_ball(urn::Urn)
     chosen_balls = OrderedDict()
@@ -166,27 +236,10 @@ balls in the Urn.
 # Arguments
 - bin: EventBin that will pull balls from its Urns
 """
-function pull(bin::EventBin)
-    if bin.source_odds == even
-        urn_idx = rand(1:length(bin.urns))
-        urn = bin.urns[urn_idx]
-        balls = pull_ball(urn)
-        @printf "    pull %s %s\n" urn.name repr(balls)
-        move_balls(balls, bin.balls)
-    elseif bin.source_odds == proportional
-        total_balls = sum([sum(values(urn.balls)) for urn in bin.urns])
-        ball_idx = rand(1:total_balls)
-        running_ball_count = 0
-        for urn in bin.urns
-            running_ball_count += sum(values(urn.balls))
-            if running_ball_count >= ball_idx
-                balls = pull_ball(urn)
-                @printf "    pull %s %s\n" urn.name repr(balls)
-                move_balls(balls, bin.balls)
-                break
-            end
-        end
-    end
+function pull(bin::EventBin, urn::Urn)
+    balls = pull_ball(urn)
+    @printf "    pull %s %s\n" urn.name repr(balls)
+    move_balls(balls, bin.balls)
 end
 
 
@@ -202,23 +255,27 @@ no balls left in the EventBin.
 # Arguments
 - bin: EventBin that will perform its actions
 """
-function act(bin::EventBin)
-    for (command, urn, class) in bin.actions
-        if command == "move"
-            if class != nothing && bin.balls[class] > 0
-                @printf "    move %s %s\n" class repr(bin.balls[class])
+function act(bin::EventBin, source_urn::Urn)
+    for action in bin.actions
+        urns = get_urns(action, bin, source_urn)
+        urn = select_urn(urns, action.target_odds)
+        # @printf "    action %s\n" action.command
+        # @printf "      urn %s\n" repr(urn)
+        if action.command == "move"
+            if action.class != nothing && bin.balls[action.class] > 0
+                @printf "    move %s %s\n" action.class repr(bin.balls[action.class])
             end
-            move_balls(bin.balls, urn.balls, class=class)
-        elseif command == "discard"
-            if class != nothing && bin.balls[class] > 0
-                @printf "    discard %s %s\n" class repr(bin.balls[class])
+            move_balls(bin.balls, urn.balls, class=action.class)
+        elseif action.command == "discard"
+            if action.class != nothing && bin.balls[action.class] > 0
+                @printf "    discard %s %s\n" action.class repr(bin.balls[action.class])
             end
             if urn == nothing
-                discard_balls(bin.balls, class=class)
+                discard_balls(bin.balls, class=action.class)
             else
-                discard_balls(bin.balls, discard=urn.balls, class=class)
+                discard_balls(bin.balls, discard=urn.balls, class=action.class)
             end
-        elseif command == "double"
+        elseif action.command == "double"
         end
     end
 end
@@ -232,6 +289,7 @@ mutable struct UrnSimulator
     urns::Array{Urn, 1}
     events::Array{EventBin, 1}
     step_count::Int64
+    source_urns::Dict
     function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
         # Normalize ball classes across Urns
         classes = Set{AbstractString}()
@@ -249,7 +307,7 @@ mutable struct UrnSimulator
             end
         end
 
-        new(urns, events, step_count)
+        new(urns, events, step_count, Dict())
     end
 end
 
@@ -268,7 +326,9 @@ Pull balls for all EventBins in an UrnSimulator.
 """
 function pull(sim::UrnSimulator)
     for event in sim.events
-        pull(event)
+        urn = select_urn(event.urns, event.source_odds)
+        sim.source_urns[event] = urn
+        pull(event, urn)
     end
 end
 
@@ -283,7 +343,7 @@ Process actions for all EventBins in an UrnSimulator.
 """
 function act(sim::UrnSimulator)
     for event in sim.events
-        act(event)
+        act(event, sim.source_urns[event])
     end
 end
 
@@ -394,7 +454,8 @@ function setup_sim(filename)
                     push!(bin_urns, urn)
                 end
             else
-                push!(bin_urns, name_to_urn[bin_info["source_urns"]])
+                urn_name = bin_info["source_urns"]
+                push!(bin_urns, name_to_urn[urn_name])
             end
 
             source_odds = even
@@ -411,15 +472,45 @@ function setup_sim(filename)
             actions = []
             for action_info in bin_info["actions"]
                 action_type = action_info["type"]
-                urn = nothing
-                if haskey(action_info, "urn")
-                    urn = name_to_urn[action_info["urn"]]
+
+                target_urns = Array{Urn, 1}()
+                target_string = ""
+                if haskey(action_info, "target_urns")
+                    if action_info["target_urns"] isa Array
+                        for urn_name in action_info["target_urns"]
+                            push!(target_urns, name_to_urn[urn_name])
+                        end
+                    elseif action_info["target_urns"] == "all"
+                        for urn in urns
+                            push!(target_urns, urn)
+                        end
+                    elseif action_info["target_urns"] == "source"
+                        target_string = "source"
+                    elseif action_info["target_urns"] == "not source"
+                        target_string = "not source"
+                    else
+                        urn_name = action_info["target_urns"]
+                        push!(target_urns, name_to_urn[urn_name])
+                    end
                 end
+
                 ball_class = nothing
                 if haskey(action_info, "class")
                     ball_class = action_info["class"]
                 end
-                action = (action_type, urn, ball_class)
+
+                target_odds = even
+                if haskey(action_info, "target_odds")
+                    if action_info["target_odds"] == "even"
+                        target_odds = even
+                    elseif action_info["target_odds"] == "proportional"
+                        target_odds = proportional
+                    else
+                        throw(DomainError(action_info["target_odds"], "target_odds must be either \"even\" or \"proportional\""))
+                    end
+                end
+
+                action = Action(action_type, target_urns, target_string, ball_class, target_odds)
                 push!(actions, action)
             end
 
