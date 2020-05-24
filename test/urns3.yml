@@ -1,0 +1,19 @@
+
+num_steps: 100
+
+urns:
+  - name: snuffy
+    balls:
+      - class: black
+        num: 30
+  - name: bird
+    balls:
+      - class: white
+        num: 30
+
+event_bins:
+  - name: bin1
+    source_urns: all
+    actions:
+      - type: move
+        target_urns: not source

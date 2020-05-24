@@ -1,0 +1,17 @@
+
+num_steps: 100
+
+urns:
+  - name: urn1
+    balls:
+      - class: white
+        num: 30
+  - name: urn2
+
+event_bins:
+  - name: bin1
+    source_urns: all
+    source_odds: proportional
+    actions:
+      - type: move
+        target_urns: not source
