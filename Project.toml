@@ -9,6 +9,3 @@ version = "0.0.1"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
-
-[targets]
-test = ["Test"]
