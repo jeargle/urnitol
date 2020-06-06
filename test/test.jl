@@ -18,8 +18,8 @@ function test_urn()
     print_test_header("Urn")
 
     urn1 = Urn("urnie")
-    urn2 = Urn("bert", OrderedDict("black" => 2, "white" => 3))
-    urn3 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
+    urn2 = Urn("bert", SortedDict("black" => 2, "white" => 3))
+    urn3 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
 
     println(urn1)
     println(urn2)
@@ -27,8 +27,8 @@ function test_urn()
     println()
 
     println("*** balls")
-    balls1 = OrderedDict("black" => 3, "white" => 2)
-    balls2 = OrderedDict("black" => 4, "white" => 5)
+    balls1 = SortedDict("black" => 3, "white" => 2)
+    balls2 = SortedDict("black" => 4, "white" => 5)
 
     println("  balls1: ", balls1)
     println("  balls2: ", balls2)
@@ -55,8 +55,8 @@ end
 function test_eventbin()
     print_test_header("EventBin")
 
-    urn1 = Urn("urnie")
-    urn2 = Urn("sesame", OrderedDict("black" => 20, "white" => 30))
+    urn1 = Urn("urnie", SortedDict("black" => 0, "white" => 0))
+    urn2 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
     ebin1 = EventBin("bin1", [urn1], [])
     ebin2 = EventBin("bin2", [urn2], [Action("move", [urn1], "", nothing)])
 
@@ -89,8 +89,8 @@ end
 function test_urnsimulator1()
     print_test_header("UrnSimulator 1")
 
-    urn1 = Urn("snuffy", OrderedDict("black" => 30, "white" => 30))
-    urn2 = Urn("bird", OrderedDict("black" => 0, "white" => 0))
+    urn1 = Urn("snuffy", SortedDict("black" => 30, "white" => 30))
+    urn2 = Urn("bird", SortedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
                      [urn1, urn2],
                      [Action("move", [urn2], "", "black"),
@@ -109,8 +109,8 @@ end
 function test_urnsimulator2()
     print_test_header("UrnSimulator 2")
 
-    urn1 = Urn("snuffy", OrderedDict("black" => 10, "white" => 0))
-    urn2 = Urn("bird", OrderedDict("black" =>0, "white" => 10))
+    urn1 = Urn("snuffy", SortedDict("black" => 10, "white" => 0))
+    urn2 = Urn("bird", SortedDict("black" =>0, "white" => 10))
     ebin1 = EventBin("bin1",
                      [urn1, urn2],
                      [Action("move", [urn1], "", "white"),

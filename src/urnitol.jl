@@ -15,8 +15,8 @@ Urn for holding balls.
 """
 struct Urn
     name::AbstractString
-    balls::OrderedDict{AbstractString, Int64}
-    Urn(name::AbstractString, balls=OrderedDict{AbstractString, Int64}()) = new(name, balls)
+    balls::SortedDict{AbstractString, Int64}
+    Urn(name::AbstractString, balls=SortedDict{AbstractString, Int64}()) = new(name, balls)
 end
 
 function Base.show(io::IO, urn::Urn)
@@ -49,7 +49,7 @@ Temporary holding bin for balls that have been removed from Urns.
 """
 struct EventBin
     name::AbstractString
-    balls::OrderedDict{AbstractString, Int64}
+    balls::SortedDict{AbstractString, Int64}
     urns::Array{Urn, 1}
     actions::Array{Action, 1}
     source_odds::Odds
@@ -62,7 +62,7 @@ struct EventBin
             end
         end
 
-        balls = OrderedDict{AbstractString, Int64}()
+        balls = SortedDict{AbstractString, Int64}()
         for class in classes
             if !(class in keys(balls))
                 balls[class] = 0
@@ -150,7 +150,7 @@ Move balls from one collection into another.
 - balls2: collection to receive balls
 - class: single class of ball to move; nothing uses all classes
 """
-function move_balls(balls1::OrderedDict, balls2::OrderedDict; class=nothing)
+function move_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
     if class == nothing
         classes = keys(balls1)
     else
@@ -177,7 +177,7 @@ Move balls from one collection to a discard bin.
 - discard: collection to receive balls
 - class: single class of ball to move; nothing uses all classes
 """
-function discard_balls(balls::OrderedDict; discard=nothing, class=nothing)
+function discard_balls(balls::SortedDict; discard=nothing, class=nothing)
 
     if discard == nothing
         if class == nothing
@@ -204,10 +204,10 @@ Pull a ball out of an Urn.
 - urn: Urn from which to pull a ball
 
 # Returns
-- OrderedDict of chosen balls
+- SortedDict of chosen balls
 """
 function pull_ball(urn::Urn)
-    chosen_balls = OrderedDict()
+    chosen_balls = SortedDict()
     total_balls = sum(values(urn.balls))
     if total_balls > 0
         ball_idx = rand(1:total_balls)
@@ -421,7 +421,7 @@ function setup_sim(filename)
         for urn_info in setup["urns"]
             name = urn_info["name"]
 
-            balls = OrderedDict()
+            balls = SortedDict()
             if haskey(urn_info, "balls")
                 for ball_info in urn_info["balls"]
                     ball_num = 0
