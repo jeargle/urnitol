@@ -148,6 +148,15 @@ function test_urnsimulator5()
     run_sim(sim, num_steps)
 end
 
+function test_urnsimulator6()
+    print_test_header("UrnSimulator 6")
+
+    sim, num_steps = setup_sim("urns4.yml")
+    @printf "sim: %s\n" repr(sim)
+    @printf "num_steps: %d\n" num_steps
+    run_sim(sim, num_steps)
+end
+
 function test_ehrenfest()
     print_test_header("Ehrenfest")
 
@@ -165,6 +174,7 @@ function main()
     test_urnsimulator3()
     test_urnsimulator4()
     test_urnsimulator5()
+    test_urnsimulator6()
     test_ehrenfest()
 end
 

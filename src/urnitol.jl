@@ -196,6 +196,33 @@ end
 
 
 """
+    double_balls(balls1, balls2, class)
+
+Double and move balls from one collection into another.
+
+# Arguments
+- balls1: collection of balls to double
+- balls2: collection to receive balls
+- class: single class of ball to double; nothing uses all classes
+"""
+function double_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
+    if class == nothing
+        classes = keys(balls1)
+    else
+        classes = [class]
+    end
+
+    for i in classes
+        if get(balls2, i, nothing) == nothing
+            balls2[i] = 0
+        end
+        balls2[i] += balls1[i] * 2
+        balls1[i] = 0
+    end
+end
+
+
+"""
     pull_ball(urn)
 
 Pull a ball out of an Urn.
@@ -276,6 +303,10 @@ function act(bin::EventBin, source_urn::Urn)
                 discard_balls(bin.balls, discard=urn.balls, class=action.class)
             end
         elseif action.command == "double"
+            if action.class != nothing && bin.balls[action.class] > 0
+                @printf "    double %s %s\n" action.class repr(bin.balls[action.class])
+            end
+            double_balls(bin.balls, urn.balls, class=action.class)
         end
     end
 end
