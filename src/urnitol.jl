@@ -3,8 +3,10 @@
 
 module urnitol
 
-export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, setup_sim
+export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, read_trajectory_file, write_trajectory_file, setup_sim
 
+using CSV
+using DataFrames
 using DataStructures
 using Printf
 using YAML
@@ -426,6 +428,33 @@ end
 """
 function choose_event(prob)
     return rand(prob.event_weights)
+end
+
+
+"""
+    read_trajectory_file(filename)
+
+Read a CSV file containing information for each step of a simulation.
+
+# Arguments
+- filename: name of CSV input file
+"""
+function read_trajectory_file(filename)
+    return CSV.read(filename)
+end
+
+
+"""
+    write_trajectory_file(filename, trajectory)
+
+Write a CSV file containing information for each step of a simulation.
+
+# Arguments
+- filename: name of CSV output file
+- trajectory: DataFrame with simulation step data
+"""
+function write_trajectory_file(filename, trajectory)
+    CSV.write(filename, trajectory)
 end
 
 
