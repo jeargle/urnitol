@@ -1,8 +1,20 @@
 # Run create_sysimage() from this directory.
 
+# using CSV
+using CSVFiles
+using DataFrames
 using DataStructures
 using Printf
 using YAML
+
+df1 = DataFrame(Name=["John", "Bill", "Maria"],
+                Age=[43,22,81],
+                Salary=[132000, 45000, 60000])
+
+# CSV.write("blah.csv", df1)
+# df2 = CSV.read("blah.csv")
+save("blah.csv", df1)
+df2 = DataFrame(load("blah.csv"))
 
 str1 = "test string"
 

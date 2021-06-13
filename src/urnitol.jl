@@ -5,7 +5,8 @@ module urnitol
 
 export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, read_trajectory_file, write_trajectory_file, setup_sim
 
-using CSV
+# using CSV  # read() and File() unusable in v0.8.5 julia v1.6.1
+using CSVFiles
 using DataFrames
 using DataStructures
 using Printf
@@ -323,6 +324,7 @@ mutable struct UrnSimulator
     events::Array{EventBin, 1}
     step_count::Int64
     source_urns::Dict
+    trajectory::DataFrame
     function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
         # Normalize ball classes across Urns
         classes = Set{AbstractString}()
@@ -340,7 +342,21 @@ mutable struct UrnSimulator
             end
         end
 
-        new(urns, events, step_count, Dict())
+        # Build empty trajectory
+        header = Dict()
+        header[:step] = Int[]
+        header[:command] = String[]
+        for urn in urns
+            for class in classes
+                col_name = urn.name * '.' * class
+                header[Symbol(a)] = Int[]
+            end
+        end
+        trajectory = DataFrame(header)
+        # How to add a row to trajectory
+        # push!(y, Dict(Symbol("step")=>4, Symbol("name")=>"David"))
+
+        new(urns, events, step_count, Dict(), trajectory)
     end
 end
 
@@ -440,7 +456,8 @@ Read a CSV file containing information for each step of a simulation.
 - filename: name of CSV input file
 """
 function read_trajectory_file(filename)
-    return CSV.read(filename)
+    # return CSV.read(filename)
+    return DataFrame(load(filename))
 end
 
 
@@ -454,7 +471,8 @@ Write a CSV file containing information for each step of a simulation.
 - trajectory: DataFrame with simulation step data
 """
 function write_trajectory_file(filename, trajectory)
-    CSV.write(filename, trajectory)
+    # CSV.write(filename, trajectory)
+    save(filename, trajectory)
 end
 
 
