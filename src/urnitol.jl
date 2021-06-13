@@ -349,7 +349,7 @@ mutable struct UrnSimulator
         for urn in urns
             for class in classes
                 col_name = urn.name * '.' * class
-                header[Symbol(a)] = Int[]
+                header[Symbol(col_name)] = Int[]
             end
         end
         trajectory = DataFrame(header)
