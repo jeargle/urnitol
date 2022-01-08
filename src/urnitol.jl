@@ -5,8 +5,7 @@ module urnitol
 
 export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, read_trajectory_file, write_trajectory_file, setup_sim
 
-# using CSV  # read() and File() unusable in v0.8.5 julia v1.6.1
-using CSVFiles
+using CSV
 using DataFrames
 using DataStructures
 using Printf
@@ -456,8 +455,7 @@ Read a CSV file containing information for each step of a simulation.
 - filename: name of CSV input file
 """
 function read_trajectory_file(filename)
-    # return CSV.read(filename)
-    return DataFrame(load(filename))
+    return DataFrame(CSV.File(filename))
 end
 
 
@@ -471,8 +469,7 @@ Write a CSV file containing information for each step of a simulation.
 - trajectory: DataFrame with simulation step data
 """
 function write_trajectory_file(filename, trajectory)
-    # CSV.write(filename, trajectory)
-    save(filename, trajectory)
+    CSV.write(filename, trajectory)
 end
 
 

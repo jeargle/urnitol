@@ -61,7 +61,7 @@ The `actions` parameter sets up Actions that will happen to pulled balls.  If a 
 Dependencies
 ------------
 
-* CSVFiles
+* CSV
 * DataFrames
 * DataStructures
 * Printf
