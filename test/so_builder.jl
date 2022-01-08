@@ -1,7 +1,8 @@
-# Run create_sysimage() from this directory.
+# To build sysimage boom.so from uveldt/test:
+#   using PackageCompiler
+#   create_sysimage([:CSV, :DataFrames, :DataStructures, :Printf, :YAML], sysimage_path="../boom.so", precompile_execution_file="so_builder.jl")
 
-# using CSV
-using CSVFiles
+using CSV
 using DataFrames
 using DataStructures
 using Printf
@@ -11,10 +12,8 @@ df1 = DataFrame(Name=["John", "Bill", "Maria"],
                 Age=[43,22,81],
                 Salary=[132000, 45000, 60000])
 
-# CSV.write("blah.csv", df1)
-# df2 = CSV.read("blah.csv")
-save("blah.csv", df1)
-df2 = DataFrame(load("blah.csv"))
+CSV.write("blah.csv", df1)
+df2 = DataFrame(CSV.File("blah.csv"))
 
 str1 = "test string"
 
@@ -27,7 +26,7 @@ println()
 
 ball_dict1 = SortedDict()
 ball_dict2 = SortedDict{AbstractString, Int64}()
-setup = YAML.load(open("urns1.yml"))
+setup = YAML.load(open("urns/urns1.yml"))
 if haskey(setup, "urns")
     for urn_info in setup["urns"]
         name = urn_info["name"]
