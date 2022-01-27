@@ -323,18 +323,19 @@ mutable struct UrnSimulator
     events::Array{EventBin, 1}
     step_count::Int64
     source_urns::Dict
+    ball_classes::Set{AbstractString}
     trajectory::DataFrame
     function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
         # Normalize ball classes across Urns
-        classes = Set{AbstractString}()
+        ball_classes = Set{AbstractString}()
         for urn in urns
             for (class, count) in urn.balls
-                push!(classes, class)
+                push!(ball_classes, class)
             end
         end
 
         for urn in urns
-            for class in classes
+            for class in ball_classes
                 if !(class in keys(urn.balls))
                     urn.balls[class] = 0
                 end
@@ -344,9 +345,9 @@ mutable struct UrnSimulator
         # Build empty trajectory
         header = Dict()
         header[:step] = Int[]
-        header[:command] = String[]
+        # header[:command] = String[]
         for urn in urns
-            for class in classes
+            for class in ball_classes
                 col_name = urn.name * '.' * class
                 header[Symbol(col_name)] = Int[]
             end
@@ -355,7 +356,7 @@ mutable struct UrnSimulator
         # How to add a row to trajectory
         # push!(y, Dict(Symbol("step")=>4, Symbol("name")=>"David"))
 
-        new(urns, events, step_count, Dict(), trajectory)
+        new(urns, events, step_count, Dict(), ball_classes, trajectory)
     end
 end
 
@@ -397,6 +398,28 @@ end
 
 
 """
+    log(sim)
+
+Record current state to trajectory.
+
+# Arguments
+- sim: UrnSimulator that will perform the act
+"""
+function log(sim::UrnSimulator)
+    frame_row = Dict()
+    frame_row[:step] = sim.step_count
+    for urn in sim.urns
+        for class in sim.ball_classes
+            col_name = urn.name * '.' * class
+            frame_row[Symbol(col_name)] = urn.balls[class]
+        end
+    end
+
+    push!(sim.trajectory, frame_row)
+end
+
+
+"""
     step_sim(sim)
 
 Calculate one timestep of an UrnSimulator.
@@ -408,6 +431,7 @@ function step_sim(sim::UrnSimulator)
     sim.step_count += 1
     pull(sim)
     act(sim)
+    log(sim)
 end
 
 

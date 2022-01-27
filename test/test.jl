@@ -168,6 +168,7 @@ function test_ehrenfest()
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
     run_sim(sim, num_steps)
+    write_trajectory_file("ehrenfest.csv", sim.trajectory)
 end
 
 function main()
