@@ -343,7 +343,7 @@ mutable struct UrnSimulator
         end
 
         # Build empty trajectory
-        header = Dict()
+        header = OrderedDict()
         header[:step] = Int[]
         # header[:command] = String[]
         for urn in urns
@@ -353,8 +353,6 @@ mutable struct UrnSimulator
             end
         end
         trajectory = DataFrame(header)
-        # How to add a row to trajectory
-        # push!(y, Dict(Symbol("step")=>4, Symbol("name")=>"David"))
 
         new(urns, events, step_count, Dict(), ball_classes, trajectory)
     end

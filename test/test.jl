@@ -132,6 +132,7 @@ function test_urnsimulator3()
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
     run_sim(sim, num_steps)
+    write_trajectory_file("urns1.csv", sim.trajectory)
 end
 
 function test_urnsimulator4()
@@ -141,6 +142,7 @@ function test_urnsimulator4()
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
     run_sim(sim, num_steps)
+    write_trajectory_file("urns2.csv", sim.trajectory)
 end
 
 function test_urnsimulator5()
@@ -150,6 +152,7 @@ function test_urnsimulator5()
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
     run_sim(sim, num_steps)
+    write_trajectory_file("urns3.csv", sim.trajectory)
 end
 
 function test_urnsimulator6()
@@ -159,6 +162,7 @@ function test_urnsimulator6()
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
     run_sim(sim, num_steps)
+    write_trajectory_file("urns4.csv", sim.trajectory)
 end
 
 function test_ehrenfest()
