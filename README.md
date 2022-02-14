@@ -15,8 +15,8 @@ In urnitol Urn simulations are set up and run through UrnSimulators which consis
 
 So the 2-step simulation loop goes:
 
-1. pull - pull balls from Urns and place in EvenBins
-2. action - act on the EvenBin balls
+1. pull - pull balls from Urns and place in EventBins
+2. action - act on the EventBin balls
 
 Currently supported EventBin actions are: move, discard, and double.
 
