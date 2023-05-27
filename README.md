@@ -64,5 +64,6 @@ Dependencies
 * CSV
 * DataFrames
 * DataStructures
+* Plots
 * Printf
 * YAML
