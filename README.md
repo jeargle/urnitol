@@ -58,6 +58,18 @@ An EventBin must have a specified `name`.  The `source_urns` parameter can consi
 
 The `actions` parameter sets up Actions that will happen to pulled balls.  If a `class` is specified, the action will only apply to balls of that class.  An Action must have a `type` set.  These can be "move" or "discard", to move a pulled ball to a chosen target Urn or discard the ball, respectively.  "move" Actions must have a `target_urns` parameter, but this is optional for "discard" Actions.  If a "discard" Action has `target_urns` set up, it will act essentially like a "move" Action.  These `target_urns` will be Urns that pulled balls can be moved to.  `target_urns` can be set to the name of a single Urn, a list of Urn names, "all", "source", or "not source".  "source" will move pulled balls back to the Urn they were pulled from.  "not source" will move balls to an Urn other than the source Urn.  Finally, Actions can take a `target_odds` parameter (default "even") that can be either "even" or "proportional".  This is similar to the `source_odds` parameter but applies to the action stage of "move" Actions.
 
+How to Run
+----------
+
+urnitol has a commandline script `urnsim.jl` that reads a setup file and runs the specified simulation.  For example, to run the 100-step test simulation in `ehrenfest.yml`, navigate to `urnitol/bin` and run
+
+```
+> ./urnsim.jl ../test/urns/ehrenfest.yml
+```
+
+Data for each step of the simulation will be printed to stdout.
+
+
 Dependencies
 ------------
 
