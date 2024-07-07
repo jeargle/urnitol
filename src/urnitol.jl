@@ -77,17 +77,17 @@ end
 
 
 """
-    get_urns(action, source_urn)
+    get_urns(action::Action, bin::EventBin, source_urn::Urn)
 
 Fetch an array of Urns from an Action.
 
 # Arguments
-- action: Action from which Urn list is fetched
-- bin: EventBin with Array of source Urns
-- source_urn: Urn from which a ball was pulled
+- `action::Action`: Action from which Urn list is fetched
+- `bin::EventBin`: EventBin with Array of source Urns
+- `source_urn::Urn`: Urn from which a ball was pulled
 
 # Returns
-- Array of Urns
+- `Array{Urn, 1}`: Array of Urns.
 """
 function get_urns(action::Action, bin::EventBin, source_urn::Urn)
     if length(action.target_urns) > 0
@@ -107,16 +107,16 @@ end
 
 
 """
-    select_urn(urns, odds)
+    select_urn(urns::Array{Urn, 1}, odds::Odds)
 
 Select an Urn from an array of Urns.
 
 # Arguments
-- urns: Array of Urns to choose from
-- odds: Odds to use in selection
+- `urns::Array{Urn, 1}`: Array of Urns to choose from.
+- `odds::Odds`: Odds to use in selection.
 
 # Returns
-- selected Urn or nothing if urns Array is empty
+- `Union{Urn, Nothing}`: selected Urn or nothing if urns Array is empty.
 """
 function select_urn(urns::Array{Urn, 1}, odds::Odds)
     selected_urn = nothing
@@ -143,14 +143,14 @@ end
 
 
 """
-    move_balls(balls1, balls2, class)
+    move_balls(balls1::SortedDict, balls2::SortedDict, class)
 
 Move balls from one collection into another.
 
 # Arguments
-- balls1: collection of balls to move
-- balls2: collection to receive balls
-- class: single class of ball to move; nothing uses all classes
+- `balls1::SortedDict`: collection of balls to move.
+- `balls2::SortedDict`: collection to receive balls.
+- `class`: single class of ball to move; nothing uses all classes.
 """
 function move_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
     if class == nothing
@@ -170,14 +170,14 @@ end
 
 
 """
-    discard_balls(balls, discard, class)
+    discard_balls(balls::SortedDict, discard, class)
 
 Move balls from one collection to a discard bin.
 
 # Arguments
-- balls1: collection of balls to move
-- discard: collection to receive balls
-- class: single class of ball to move; nothing uses all classes
+- `balls1::SortedDict`: collection of balls to move.
+- `discard`: collection to receive balls.
+- `class`: single class of ball to move; nothing uses all classes.
 """
 function discard_balls(balls::SortedDict; discard=nothing, class=nothing)
 
@@ -198,14 +198,14 @@ end
 
 
 """
-    double_balls(balls1, balls2, class)
+    double_balls(balls1::SortedDict, balls2::SortedDict, class)
 
 Double and move balls from one collection into another.
 
 # Arguments
-- balls1: collection of balls to double
-- balls2: collection to receive balls
-- class: single class of ball to double; nothing uses all classes
+- `balls1::SortedDict`: collection of balls to double.
+- `balls2::SortedDict`: collection to receive balls.
+- `class`: single class of ball to double; nothing uses all classes.
 """
 function double_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
     if class == nothing
@@ -225,15 +225,15 @@ end
 
 
 """
-    pull_ball(urn)
+    pull_ball(urn::Urn)
 
 Pull a ball out of an Urn.
 
 # Arguments
-- urn: Urn from which to pull a ball
+- `urn::Urn`: Urn from which to pull a ball
 
 # Returns
-- SortedDict of chosen balls
+- `SortedDict`: chosen balls
 """
 function pull_ball(urn::Urn)
     chosen_balls = SortedDict()
@@ -256,14 +256,15 @@ end
 
 
 """
-    pull(bin)
+    pull(bin::EventBin, urn::Urn)
 
-Pull balls from Urns and move them into an EventBin.
+Pull balls from an Urn and move them into an EventBin.
 The probability that an Urn is chosen is proportional to the number of
 balls in the Urn.
 
 # Arguments
-- bin: EventBin that will pull balls from its Urns
+- `bin::EventBin`: EventBin that will pull balls from its Urns.
+- `urn::Urn`: Urn that balls are pulled from.
 """
 function pull(bin::EventBin, urn::Urn)
     balls = pull_ball(urn)
@@ -273,7 +274,7 @@ end
 
 
 """
-    act(bin)
+    act(bin::EventBin, source_urn::Urn)
 
 Perform actions on all balls in an EventBin.
 Actions are performed in Array order.  Possible actions are: move,
@@ -282,7 +283,8 @@ specific classes.  After all actions are performed, there should be
 no balls left in the EventBin.
 
 # Arguments
-- bin: EventBin that will perform its actions
+- `bin::EventBin`: EventBin that will perform its actions.
+- `source_urn::Urn`: Urn that balls were pulled from.
 """
 function act(bin::EventBin, source_urn::Urn)
     for action in bin.actions
@@ -369,12 +371,12 @@ end
 
 
 """
-    pull(sim)
+    pull(sim::UrnSimulator)
 
 Pull balls for all EventBins in an UrnSimulator.
 
 # Arguments
-- sim: UrnSimulator that will perform the pull
+- `sim::UrnSimulator`: UrnSimulator that will perform the pull.
 """
 function pull(sim::UrnSimulator)
     for event in sim.events
@@ -386,12 +388,12 @@ end
 
 
 """
-    act(sim)
+    act(sim::UrnSimulator)
 
 Process actions for all EventBins in an UrnSimulator.
 
 # Arguments
-- sim: UrnSimulator that will perform the act
+- `sim::UrnSimulator`: UrnSimulator that will perform the act.
 """
 function act(sim::UrnSimulator)
     for event in sim.events
@@ -401,12 +403,12 @@ end
 
 
 """
-    log_pulls(sim)
+    log_pulls(sim::UrnSimulator)
 
 Record ball pulls to trajectory.
 
 # Arguments
-- sim: UrnSimulator
+- `sim::UrnSimulator`: UrnSimulator to record.
 """
 function log_pulls(sim::UrnSimulator)
     sim.step_log = Dict()
@@ -425,12 +427,12 @@ end
 
 
 """
-    log_urns(sim)
+    log_urns(sim::UrnSimulator)
 
 Record current urn states to trajectory.
 
 # Arguments
-- sim: UrnSimulator
+- `sim::UrnSimulator`: UrnSimulator to record.
 """
 function log_urns(sim::UrnSimulator)
     for urn in sim.urns
@@ -445,12 +447,12 @@ end
 
 
 """
-    step_sim(sim)
+    step_sim(sim::UrnSimulator)
 
 Calculate one timestep of an UrnSimulator.
 
 # Arguments
-- sim: UrnSimulator that will be stepped forward
+- `sim::UrnSimulator`: UrnSimulator that will be stepped forward.
 """
 function step_sim(sim::UrnSimulator)
     sim.step_count += 1
@@ -462,12 +464,13 @@ end
 
 
 """
-    run_sim(sim, num_steps)
+    run_sim(sim::UrnSimulator, num_steps)
 
 Calculate multiple timesteps of an UrnSimulator.
 
 # Arguments
-- sim: UrnSimulator that will be stepped forward
+- `sim::UrnSimulator`: UrnSimulator that will be stepped forward.
+- `num_steps`: number of steps to run.
 """
 function run_sim(sim::UrnSimulator, num_steps)
     @printf "%s\n" repr(sim)
@@ -489,7 +492,7 @@ end
     choose_event(prob)
 
 # Arguments
-- prob: probability distribution
+- `prob`: probability distribution
 """
 function choose_event(prob)
     return rand(prob.event_weights)
@@ -502,7 +505,7 @@ end
 Read a CSV file containing information for each step of a simulation.
 
 # Arguments
-- filename: name of CSV input file
+- `filename`: name of CSV input file.
 """
 function read_trajectory_file(filename)
     return DataFrame(CSV.File(filename))
@@ -515,8 +518,8 @@ end
 Write a CSV file containing information for each step of a simulation.
 
 # Arguments
-- filename: name of CSV output file
-- trajectory: DataFrame with simulation step data
+- `filename`: name of CSV output file.
+- `trajectory`: DataFrame with simulation step data.
 """
 function write_trajectory_file(filename, trajectory)
     CSV.write(filename, trajectory)
@@ -529,7 +532,7 @@ end
 Create an UrnSimulator from a YAML setup file.
 
 # Arguments
-- filename: name of YAML setup file
+- `filename`: name of YAML setup file.
 """
 function setup_sim(filename)
     setup = YAML.load(open(filename))
