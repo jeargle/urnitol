@@ -16,7 +16,7 @@ using Printf
 Simulate a system specified by a config file.
 
 # Arguments
-- filename: YAML config file
+- `filename`: YAML config file
 """
 function simulate(filename)
     sim, num_steps = setup_sim(filename)
