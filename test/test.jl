@@ -8,6 +8,7 @@
 using urnitol
 
 using DataStructures
+using Plots
 using Printf
 
 function print_test_header(title)
@@ -175,16 +176,29 @@ function test_ehrenfest()
     write_trajectory_file("ehrenfest.csv", sim.trajectory)
 end
 
+function test_plot_trajectory1()
+    print_test_header("Plot trajectory 1")
+
+    sim, num_steps = setup_sim("urns/urns3.yml")
+    @printf "sim: %s\n" repr(sim)
+    @printf "num_steps: %d\n" num_steps
+    run_sim(sim, num_steps)
+    p = plot_trajectory(sim.trajectory)
+    savefig(p, "urns3.svg")
+    println("all values plotted")
+end
+
 function main()
-    test_urn()
-    test_eventbin()
-    test_urnsimulator1()
-    test_urnsimulator2()
-    test_urnsimulator3()
-    test_urnsimulator4()
-    test_urnsimulator5()
-    test_urnsimulator6()
-    test_ehrenfest()
+    # test_urn()
+    # test_eventbin()
+    # test_urnsimulator1()
+    # test_urnsimulator2()
+    # test_urnsimulator3()
+    # test_urnsimulator4()
+    # test_urnsimulator5()
+    # test_urnsimulator6()
+    # test_ehrenfest()
+    test_plot_trajectory1()
 end
 
 main()

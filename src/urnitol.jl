@@ -3,11 +3,12 @@
 
 module urnitol
 
-export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, read_trajectory_file, write_trajectory_file, setup_sim
+export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, read_trajectory_file, write_trajectory_file, plot_trajectory, setup_sim
 
 using CSV
 using DataFrames
 using DataStructures
+using Plots
 using Printf
 using YAML
 
@@ -506,6 +507,9 @@ Read a CSV file containing information for each step of a simulation.
 
 # Arguments
 - `filename`: name of CSV input file.
+
+# Returns
+- `DataFrame`: record of Urns and balls for each step of an simulation.
 """
 function read_trajectory_file(filename)
     return DataFrame(CSV.File(filename))
@@ -513,16 +517,38 @@ end
 
 
 """
-    write_trajectory_file(filename, trajectory)
+    write_trajectory_file(filename, trajectory::DataFrame)
 
 Write a CSV file containing information for each step of a simulation.
 
 # Arguments
 - `filename`: name of CSV output file.
-- `trajectory`: DataFrame with simulation step data.
+- `trajectory::DataFrame`: DataFrame with simulation step data.
 """
-function write_trajectory_file(filename, trajectory)
+function write_trajectory_file(filename, trajectory::DataFrame)
     CSV.write(filename, trajectory)
+end
+
+
+"""
+    plot_trajectory(trajectory)
+
+Create a plot of Urns contents over time.
+
+# Arguments
+- `trajectory::DataFrame`: record of Urns and balls for each step of an simulation.
+
+# Returns
+- plot object
+"""
+function plot_trajectory(trajectory::DataFrame)
+    column_names = [n for n in names(trajectory) if length(split(n, ".")) == 2]
+    x = trajectory.step
+    ys = [trajectory[!, Symbol(cn)] for cn in column_names]
+
+    p = plot(x, ys, label=permutedims(column_names), title="Urn contents", xlabel="Step", ylabel="Ball count")
+
+    return p
 end
 
 

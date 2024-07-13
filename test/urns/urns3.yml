@@ -1,5 +1,5 @@
 
-num_steps: 100
+num_steps: 150
 
 urns:
   - name: snuffy
