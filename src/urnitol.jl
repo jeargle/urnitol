@@ -56,23 +56,44 @@ struct EventBin
     urns::Array{Urn, 1}
     actions::Array{Action, 1}
     source_odds::Odds
-    function EventBin(name::AbstractString, urns, actions, source_odds=even)
+    classes::Array{AbstractString, 1}
+    num_pulls::Int64
+    num_creates::Int64
+    function EventBin(name::AbstractString, urns, actions, source_odds=even, classes=[])
+
         # Normalize ball classes across Urns
-        classes = Set{AbstractString}()
+        temp_classes = Set{AbstractString}()
+
+        for class in classes
+            push!(temp_classes, class)
+        end
+
         for urn in urns
             for (class, count) in urn.balls
-                push!(classes, class)
+                push!(temp_classes, class)
             end
         end
 
         balls = SortedDict{AbstractString, Int64}()
-        for class in classes
+        for class in temp_classes
             if !(class in keys(balls))
                 balls[class] = 0
             end
         end
 
-        new(name, balls, urns, actions, source_odds)
+        if length(urns) > 0
+            num_pulls = 1
+        else
+            num_pulls = 0
+        end
+
+        if length(classes) > 0
+            num_creates = 1
+        else
+            num_creates = 0
+        end
+
+        new(name, balls, urns, actions, source_odds, classes, num_pulls, num_creates)
     end
 end
 
@@ -275,6 +296,23 @@ end
 
 
 """
+    create(bin::EventBin, class::AbstractString)
+
+Create balls of a given class and move them into an EventBin.
+
+# Arguments
+- `bin::EventBin`: EventBin that will pull balls from its Urns.
+- `class::AbstractString`: single class of ball to move.
+"""
+function create(bin::EventBin, class::AbstractString)
+    balls = SortedDict()
+    balls[class] = 1
+    @printf "    create %s %s\n" class repr(balls)
+    move_balls(balls, bin.balls)
+end
+
+
+"""
     act(bin::EventBin, source_urn::Urn)
 
 Perform actions on all balls in an EventBin.
@@ -381,9 +419,16 @@ Pull balls for all EventBins in an UrnSimulator.
 """
 function pull(sim::UrnSimulator)
     for event in sim.events
-        urn = select_urn(event.urns, event.source_odds)
-        sim.source_urns[event] = urn
-        pull(event, urn)
+        for i in 1:event.num_pulls
+            urn = select_urn(event.urns, event.source_odds)
+            sim.source_urns[event] = urn
+            pull(event, urn)
+        end
+
+        for i in 1:event.num_creates
+            class = rand(event.classes)
+            create(event, class)
+        end
     end
 end
 
