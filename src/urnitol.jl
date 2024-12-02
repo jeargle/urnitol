@@ -3,7 +3,11 @@
 
 module urnitol
 
-export Urn, Odds, Action, even, proportional, EventBin, ProbArray, UrnSimulator, select_urn, move_balls, discard_balls, pull_ball, pull, act, step_sim, run_sim, choose_event, read_trajectory_file, write_trajectory_file, plot_trajectory, setup_sim
+export Urn, Odds, Pull, Action, even, proportional, EventBin, ProbArray
+export UrnSimulator
+export select_urn, move_balls, discard_balls, pull_ball, pull, act
+export step_sim, run_sim, choose_event, read_trajectory_file
+export write_trajectory_file, plot_trajectory, setup_sim
 
 using CSV
 using DataFrames
@@ -31,6 +35,30 @@ end
 
 
 """
+Action to take during the pull phase.
+"""
+struct Pull
+    pull_type::AbstractString
+    source_urns::Array{Urn, 1}
+    source_classes::Array{AbstractString, 1}
+    source_string::AbstractString
+    source_odds::Odds
+
+    Pull(pull_type::AbstractString,
+         source_urns::Array{Urn, 1}=[],
+         source_odds=even) = new(pull_type, source_urns, [], "", source_odds)
+
+    Pull(pull_type::AbstractString,
+         source_classes::Array{AbstractString, 1}=[],
+         source_odds=even) = new(pull_type, [], source_classes, "", source_odds)
+
+    Pull(pull_type::AbstractString,
+         source_string::AbstractString="",
+         source_odds=even) = new(pull_type, [], [], source_string, source_odds)
+end
+
+
+"""
 Action to take on previously pulled balls.
 """
 struct Action
@@ -54,12 +82,13 @@ struct EventBin
     name::AbstractString
     balls::SortedDict{AbstractString, Int64}
     urns::Array{Urn, 1}
+    pulls::Array{Pull, 1}
     actions::Array{Action, 1}
     source_odds::Odds
     classes::Array{AbstractString, 1}
     num_pulls::Int64
     num_creates::Int64
-    function EventBin(name::AbstractString, urns, actions, source_odds=even, classes=[])
+    function EventBin(name::AbstractString, urns, pulls, actions, source_odds=even, classes=[])
 
         # Normalize ball classes across Urns
         temp_classes = Set{AbstractString}()
@@ -93,7 +122,7 @@ struct EventBin
             num_creates = 0
         end
 
-        new(name, balls, urns, actions, source_odds, classes, num_pulls, num_creates)
+        new(name, balls, urns, pulls, actions, source_odds, classes, num_pulls, num_creates)
     end
 end
 

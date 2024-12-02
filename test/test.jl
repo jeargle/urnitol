@@ -62,8 +62,8 @@ function test_eventbin()
 
     urn1 = Urn("urnie", SortedDict("black" => 0, "white" => 0))
     urn2 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
-    ebin1 = EventBin("bin1", [urn1], [])
-    ebin2 = EventBin("bin2", [urn2], [Action("move", [urn1], "", nothing)])
+    ebin1 = EventBin("bin1", [urn1], [], [])
+    ebin2 = EventBin("bin2", [urn2], [Pull("pull", [urn2])], [Action("move", [urn1], "", nothing)])
 
     println("*** pull")
     @printf "%s\n" repr(urn2)
@@ -98,6 +98,7 @@ function test_urnsimulator1()
     urn2 = Urn("bird", SortedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
                      [urn1, urn2],
+                     [Pull("pull", [urn1, urn2])],
                      [Action("move", [urn2], "", "black"),
                       Action("discard", Array{Urn, 1}(), "", "white")],
                      proportional)
@@ -118,6 +119,7 @@ function test_urnsimulator2()
     urn2 = Urn("bird", SortedDict("black" =>0, "white" => 10))
     ebin1 = EventBin("bin1",
                      [urn1, urn2],
+                     [Pull("pull", "all")],
                      [Action("move", [urn1], "", "white"),
                       Action("move", [urn2], "", "black")])
 
@@ -189,16 +191,16 @@ function test_plot_trajectory1()
 end
 
 function main()
-    # test_urn()
-    # test_eventbin()
-    # test_urnsimulator1()
-    # test_urnsimulator2()
+    test_urn()
+    test_eventbin()
+    test_urnsimulator1()
+    test_urnsimulator2()
     # test_urnsimulator3()
     # test_urnsimulator4()
     # test_urnsimulator5()
     # test_urnsimulator6()
     # test_ehrenfest()
-    test_plot_trajectory1()
+    # test_plot_trajectory1()
 end
 
 main()
