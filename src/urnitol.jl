@@ -697,6 +697,67 @@ function setup_sim(filename)
                 end
             end
 
+            pulls = []
+            if haskey(bin_info, "pulls")
+                bin_info_pulls = bin_info["pulls"]
+            else
+                bin_info_pulls = []
+            end
+
+            for pull_info in bin_info_pulls
+                pull_type = pull_info["type"]
+
+                source_urns = Array{Urn, 1}()
+                source_classes = Array{AbstractString, 1}()
+                source_string = ""
+
+                if haskey(pull_info, "source_urns")
+                    if pull_info["source_urns"] isa Array
+                        for urn_name in pull_info["source_urns"]
+                            push!(source_urns, name_to_urn[urn_name])
+                        end
+                    elseif pull_info["source_urns"] == "all"
+                        for urn in urns
+                            push!(source_urns, urn)
+                        end
+                    elseif pull_info["source_urns"] == "source"
+                        source_string = "source"
+                    elseif pull_info["source_urns"] == "not source"
+                        source_string = "not source"
+                    else
+                        urn_name = pull_info["source_urns"]
+                        push!(source_urns, name_to_urn[urn_name])
+                    end
+                end
+
+                if haskey(pull_info, "source_classes")
+                    for class_name in pull_info["source_classes"]
+                        push!(source_classes, class_name)
+                    end
+                end
+
+                source_odds = even
+                if haskey(pull_info, "source_odds")
+                    if pull_info["source_odds"] == "even"
+                        source_odds = even
+                    elseif pull_info["source_odds"] == "proportional"
+                        source_odds = proportional
+                    else
+                        throw(DomainError(pull_info["source_odds"], "source_odds must be either \"even\" or \"proportional\""))
+                    end
+                end
+
+                if length(source_urns) > 0
+                    pull = Pull(pull_type, source_urns, source_odds)
+                elseif length(source_classes) > 0
+                    pull = Pull(pull_type, source_classes, source_odds)
+                else
+                    pull = Pull(pull_type, source_string, source_odds)
+                end
+
+                push!(pulls, pull)
+            end
+
             actions = []
             for action_info in bin_info["actions"]
                 action_type = action_info["type"]
@@ -742,7 +803,7 @@ function setup_sim(filename)
                 push!(actions, action)
             end
 
-            bin = EventBin(name, bin_urns, actions, source_odds)
+            bin = EventBin(name, bin_urns, pulls, actions, source_odds)
             push!(bins, bin)
         end
     end
