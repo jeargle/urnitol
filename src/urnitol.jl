@@ -23,6 +23,7 @@ Urn for holding balls.
 struct Urn
     name::AbstractString
     balls::SortedDict{AbstractString, Int64}
+
     Urn(name::AbstractString, balls=SortedDict{AbstractString, Int64}()) = new(name, balls)
 end
 
@@ -45,15 +46,15 @@ struct Pull
     source_odds::Odds
 
     Pull(pull_type::AbstractString,
-         source_urns::Array{Urn, 1}=[],
+         source_urns::Array{Urn, 1},
          source_odds=even) = new(pull_type, source_urns, [], "", source_odds)
 
     Pull(pull_type::AbstractString,
-         source_classes::Array{AbstractString, 1}=[],
+         source_classes::Array{AbstractString, 1},
          source_odds=even) = new(pull_type, [], source_classes, "", source_odds)
 
     Pull(pull_type::AbstractString,
-         source_string::AbstractString="",
+         source_string::AbstractString,
          source_odds=even) = new(pull_type, [], [], source_string, source_odds)
 end
 
@@ -67,6 +68,7 @@ struct Action
     target_string::AbstractString
     class::Union{AbstractString, Nothing}
     target_odds::Odds
+
     Action(command::AbstractString,
            target_urns::Array{Urn, 1},
            target_string::AbstractString="",
@@ -88,6 +90,7 @@ struct EventBin
     classes::Array{AbstractString, 1}
     num_pulls::Int64
     num_creates::Int64
+
     function EventBin(name::AbstractString, urns, pulls, actions, source_odds=even, classes=[])
 
         # Normalize ball classes across Urns
