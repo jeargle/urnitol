@@ -5,11 +5,13 @@
 #   julia --project=.. -J ../boom.so test.jl
 
 
-using urnitol
-
 using DataStructures
 using Plots
 using Printf
+using Test
+
+using urnitol
+
 
 function print_test_header(title)
     println("\n")
@@ -22,27 +24,44 @@ end
 function test_urn()
     print_test_header("Urn")
 
-    urn1 = Urn("urnie")
-    urn2 = Urn("bert", SortedDict("black" => 2, "white" => 3))
-    urn3 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
-
-    println(urn1)
-    println(urn2)
-    println(urn3)
-    println()
-
     println("*** balls")
     balls1 = SortedDict("black" => 3, "white" => 2)
     balls2 = SortedDict("black" => 4, "white" => 5)
 
     println("  balls1: ", balls1)
+    @test balls1["black"] == 3
+    @test balls1["white"] == 2
     println("  balls2: ", balls2)
+    @test balls2["black"] == 4
+    @test balls2["white"] == 5
     println()
 
     println("*** move_balls")
     move_balls(balls1, balls2)
     println("  balls1: ", balls1)
+    @test balls1["black"] == 0
+    @test balls1["white"] == 0
     println("  balls2: ", balls2)
+    @test balls2["black"] == 7
+    @test balls2["white"] == 7
+    println()
+
+    println("*** Urns")
+    urn1 = Urn("urnie")
+    urn2 = Urn("bert", SortedDict("black" => 2, "white" => 3))
+    urn3 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
+
+    println(urn1)
+    @test urn1.name == "urnie"
+    @test length(urn1.balls) == 0
+    println(urn2)
+    @test urn2.name == "bert"
+    @test urn2.balls["black"] == 2
+    @test urn2.balls["white"] == 3
+    println(urn3)
+    @test urn3.name == "sesame"
+    @test urn3.balls["black"] == 20
+    @test urn3.balls["white"] == 30
     println()
 
     println("*** choose 3 balls")
@@ -192,9 +211,9 @@ end
 
 function main()
     test_urn()
-    test_eventbin()
-    test_urnsimulator1()
-    test_urnsimulator2()
+    # test_eventbin()
+    # test_urnsimulator1()
+    # test_urnsimulator2()
     # test_urnsimulator3()
     # test_urnsimulator4()
     # test_urnsimulator5()
