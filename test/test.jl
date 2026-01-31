@@ -81,24 +81,33 @@ function test_eventbin()
 
     urn1 = Urn("urnie", SortedDict("black" => 0, "white" => 0))
     urn2 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
+
+    println("*** EventBins")
     ebin1 = EventBin("bin1", [urn1], [], [])
     ebin2 = EventBin("bin2", [urn2], [Pull("pull", [urn2])], [Action("move", [urn1], "", nothing)])
+
+    @test ebin1.name == "bin1"
+    @test ebin2.name == "bin2"
 
     println("*** pull")
     @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
+    @test sum(values(ebin2.urns[1].balls)) == 50
     for i in 1:10
         urn = select_urn(ebin2.urns, even)
         pull(ebin2, urn)
         @printf "%s\n" repr(urn2)
         println("ebin2: ", ebin2.balls)
     end
+    @test sum(values(ebin2.urns[1].balls)) == 40
     println()
 
     println("*** pull and act")
     @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
     @printf "%s\n" repr(urn1)
+    @test sum(values(ebin1.urns[1].balls)) == 0
+    # First Action here will move all 10 balls in ebin2 into ebin1.
     for i in 1:10
         urn = select_urn(ebin2.urns, even)
         pull(ebin2, urn)
@@ -107,6 +116,8 @@ function test_eventbin()
         # println("ebin2: ", ebin2.balls)
         @printf "%s\n" repr(urn1)
     end
+    @test sum(values(ebin1.urns[1].balls)) == 20
+    @test sum(values(ebin2.urns[1].balls)) == 30
     println()
 end
 
@@ -210,8 +221,8 @@ function test_plot_trajectory1()
 end
 
 function main()
-    test_urn()
-    # test_eventbin()
+    # test_urn()
+    test_eventbin()
     # test_urnsimulator1()
     # test_urnsimulator2()
     # test_urnsimulator3()
