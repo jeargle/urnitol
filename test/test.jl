@@ -159,7 +159,7 @@ function test_urnsimulator2()
     print_test_header("UrnSimulator 2")
 
     urn1 = Urn("snuffy", SortedDict("black" => 10, "white" => 0))
-    urn2 = Urn("bird", SortedDict("black" =>0, "white" => 10))
+    urn2 = Urn("bird", SortedDict("black" => 0, "white" => 10))
     ebin1 = EventBin("bin1",
                      [urn1, urn2],
                      [Pull("pull", "all")],
@@ -167,8 +167,13 @@ function test_urnsimulator2()
                       Action("move", [urn2], "", "black")])
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
+    @test us1.step_count == 0
+
     num_steps = 30
     run_sim(us1, num_steps)
+    @test us1.step_count == 30
+    @test urn1.balls["black"] + urn2.balls["black"] == 10
+    @test urn1.balls["white"] + urn2.balls["white"] == 10
 end
 
 function test_urnsimulator3()
@@ -236,8 +241,8 @@ end
 function main()
     # test_urn()
     # test_eventbin()
-    test_urnsimulator1()
-    # test_urnsimulator2()
+    # test_urnsimulator1()
+    test_urnsimulator2()
     # test_urnsimulator3()
     # test_urnsimulator4()
     # test_urnsimulator5()
