@@ -292,6 +292,7 @@ Pull a ball out of an Urn.
 function pull_ball(urn::Urn)
     chosen_balls = SortedDict()
     total_balls = sum(values(urn.balls))
+
     if total_balls > 0
         ball_idx = rand(1:total_balls)
         ball_count = 0
@@ -399,6 +400,7 @@ mutable struct UrnSimulator
     ball_classes::Set{AbstractString}   # all ball class names
     trajectory::DataFrame
     step_log::Dict   # scratch space for next row of trajectory
+
     function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
         # Normalize ball classes across Urns
         ball_classes = Set{AbstractString}()

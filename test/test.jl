@@ -136,10 +136,23 @@ function test_urnsimulator1()
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     num_steps = 20
     @printf "%s\n" repr(us1)
+    @test us1.urns[1] == urn1
+    @test us1.urns[2] == urn2
+    @test us1.events[1] == ebin1
+    @test us1.step_count == 0
+    @test us1.ball_classes == Set(["black", "white"])
+
     for i in 1:num_steps
         step_sim(us1)
         @printf "%s\n" repr(us1)
     end
+    @test us1.step_count == 20
+    @test us1.ball_classes == Set(["black", "white"])
+    @test 10 <= urn1.balls["black"] <= 30
+    @test 10 <= urn1.balls["white"] <= 30
+    @test 0 <= urn2.balls["black"] <= 20
+    @test urn2.balls["white"] == 0
+    @test urn1.balls["black"] + urn2.balls["black"] == 30
 end
 
 function test_urnsimulator2()
@@ -222,8 +235,8 @@ end
 
 function main()
     # test_urn()
-    test_eventbin()
-    # test_urnsimulator1()
+    # test_eventbin()
+    test_urnsimulator1()
     # test_urnsimulator2()
     # test_urnsimulator3()
     # test_urnsimulator4()
