@@ -202,8 +202,14 @@ function test_urnsimulator4()
     sim, num_steps = setup_sim("urns/urns2.yml")
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
+    @test sim.ball_classes == Set(["black", "white"])
+    @test sim.step_count == 0
+
     run_sim(sim, num_steps)
     write_trajectory_file("urns2.csv", sim.trajectory)
+    @test sim.step_count == 100
+    @test sim.urns[1].balls["black"] <= 22
+    @test sim.urns[1].balls["white"] <= 7
 end
 
 function test_urnsimulator5()
@@ -253,8 +259,8 @@ function main()
     # test_eventbin()
     # test_urnsimulator1()
     # test_urnsimulator2()
-    test_urnsimulator3()
-    # test_urnsimulator4()
+    # test_urnsimulator3()
+    test_urnsimulator4()
     # test_urnsimulator5()
     # test_urnsimulator6()
     # test_ehrenfest()
