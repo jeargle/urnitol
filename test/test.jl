@@ -218,8 +218,18 @@ function test_urnsimulator5()
     sim, num_steps = setup_sim("urns/urns3.yml")
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
+    @test sim.ball_classes == Set(["black", "white"])
+    @test sim.step_count == 0
+
     run_sim(sim, num_steps)
     write_trajectory_file("urns3.csv", sim.trajectory)
+    @test sim.step_count == 150
+    @test 0 <= sim.urns[1].balls["black"] <= 30
+    @test 0 <= sim.urns[1].balls["white"] <= 30
+    @test 0 <= sim.urns[2].balls["black"] <= 30
+    @test 0 <= sim.urns[2].balls["white"] <= 30
+    @test sim.urns[1].balls["black"] + sim.urns[2].balls["black"] == 30
+    @test sim.urns[1].balls["white"] + sim.urns[2].balls["white"] == 30
 end
 
 function test_urnsimulator6()
@@ -260,8 +270,8 @@ function main()
     # test_urnsimulator1()
     # test_urnsimulator2()
     # test_urnsimulator3()
-    test_urnsimulator4()
-    # test_urnsimulator5()
+    # test_urnsimulator4()
+    test_urnsimulator5()
     # test_urnsimulator6()
     # test_ehrenfest()
     # test_plot_trajectory1()
