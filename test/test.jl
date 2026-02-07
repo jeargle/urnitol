@@ -275,7 +275,12 @@ function test_plot_trajectory1()
     @printf "num_steps: %d\n" num_steps
     run_sim(sim, num_steps)
     p = plot_trajectory(sim.trajectory)
+    @test p[1][:title] == "Urn contents"
+    @test isa(p, Plots.Plot)
+
     savefig(p, "urns3.svg")
+    @test isfile("urns3.svg")
+
     println("all values plotted")
 end
 
@@ -288,8 +293,8 @@ function main()
     # test_urnsimulator4()
     # test_urnsimulator5()
     # test_urnsimulator6()
-    test_ehrenfest()
-    # test_plot_trajectory1()
+    # test_ehrenfest()
+    test_plot_trajectory1()
 end
 
 main()
