@@ -131,7 +131,7 @@ function test_urnsimulator1()
                      [Pull("pull", [urn1, urn2])],
                      [Action("move", [urn2], "", "black"),
                       Action("discard", Array{Urn, 1}(), "", "white")],
-                     proportional)
+                     source_odds=proportional)
 
     us1 = UrnSimulator([urn1, urn2], [ebin1])
     num_steps = 20
@@ -285,16 +285,16 @@ function test_plot_trajectory1()
 end
 
 function main()
-    # test_urn()
-    # test_eventbin()
-    # test_urnsimulator1()
-    # test_urnsimulator2()
+    test_urn()
+    test_eventbin()
+    test_urnsimulator1()
+    test_urnsimulator2()
     # test_urnsimulator3()
     # test_urnsimulator4()
     # test_urnsimulator5()
     # test_urnsimulator6()
     # test_ehrenfest()
-    test_plot_trajectory1()
+    # test_plot_trajectory1()
 end
 
 main()

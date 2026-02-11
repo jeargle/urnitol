@@ -5,7 +5,7 @@ module urnitol
 
 export Urn, Odds, Pull, Action, even, proportional, EventBin, ProbArray
 export UrnSimulator
-export select_urn, move_balls, discard_balls, pull_ball, pull, act
+export select_urn, move_balls, copy_balls, discard_balls, pull_ball, pull, act
 export step_sim, run_sim, choose_event, read_trajectory_file
 export write_trajectory_file, plot_trajectory, setup_sim
 
@@ -91,8 +91,7 @@ struct EventBin
     num_pulls::Int64
     num_creates::Int64
 
-    function EventBin(name::AbstractString, urns, pulls, actions, source_odds=even, classes=[])
-
+    function EventBin(name::AbstractString, urns, pulls, actions; source_odds=even, classes=[])
         # Normalize ball classes across Urns
         temp_classes = Set{AbstractString}()
 
@@ -219,6 +218,32 @@ function move_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
         end
         balls2[i] += balls1[i]
         balls1[i] = 0
+    end
+end
+
+
+"""
+    copy_balls(balls1::SortedDict, balls2::SortedDict, class)
+
+Copy balls from one collection into another.
+
+# Arguments
+- `balls1::SortedDict`: collection of balls to copy.
+- `balls2::SortedDict`: collection to receive balls.
+- `class`: single class of ball to move; nothing uses all classes.
+"""
+function copy_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
+    if class == nothing
+        classes = keys(balls1)
+    else
+        classes = [class]
+    end
+
+    for i in classes
+        if get(balls2, i, nothing) == nothing
+            balls2[i] = 0
+        end
+        balls2[i] += balls1[i]
     end
 end
 
@@ -369,6 +394,11 @@ function act(bin::EventBin, source_urn::Urn)
                 @printf "    move %s %s\n" action.class repr(bin.balls[action.class])
             end
             move_balls(bin.balls, urn.balls, class=action.class)
+        elseif action.command == "copy"
+            if action.class != nothing && bin.balls[action.class] > 0
+                @printf "    copy %s %s\n" action.class repr(bin.balls[action.class])
+            end
+            copy_balls(bin.balls, urn.balls, class=action.class)
         elseif action.command == "discard"
             if action.class != nothing && bin.balls[action.class] > 0
                 @printf "    discard %s %s\n" action.class repr(bin.balls[action.class])
@@ -808,7 +838,7 @@ function setup_sim(filename)
                 push!(actions, action)
             end
 
-            bin = EventBin(name, bin_urns, pulls, actions, source_odds)
+            bin = EventBin(name, bin_urns, pulls, actions, source_odds=source_odds)
             push!(bins, bin)
         end
     end
