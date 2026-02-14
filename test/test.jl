@@ -63,17 +63,42 @@ function test_urn()
     @test urn3.balls["black"] == 20
     @test urn3.balls["white"] == 30
     println()
+end
+
+function test_pull()
+    print_test_header("Pull")
+
+    println("*** Urns")
+    urn1 = Urn("bert", SortedDict("black" => 2, "white" => 3))
+    urn2 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
 
     println("*** choose 3 balls")
-    pull1 = Pull("pull", [urn2])
+    pull1 = Pull("pull", [urn1])
+    println(urn1)
+    ball = pull_balls(pull1, urn1)
+    println(ball)
+    ball = pull_balls(pull1, urn1)
+    println(ball)
+    ball = pull_balls(pull1, urn1)
+    println(ball)
+    println(urn1)
+    @test sum(values(urn1.balls)) == 2
+    println()
+
+    println("*** choose 3x3 balls")
+    pull2 = Pull("pull", [urn2], num_pulls=3)
+    println(pull2)
+    balls = pull_balls(pull2, urn2)
+    println(balls)
+    @test sum(values(balls)) == 3
+    balls = pull_balls(pull2, urn2)
+    println(balls)
+    @test sum(values(balls)) == 3
+    balls = pull_balls(pull2, urn2)
+    println(balls)
+    @test sum(values(balls)) == 3
     println(urn2)
-    ball = pull_balls(pull1, urn2)
-    println(ball)
-    ball = pull_balls(pull1, urn2)
-    println(ball)
-    ball = pull_balls(pull1, urn2)
-    println(ball)
-    println(urn2)
+    @test sum(values(urn2.balls)) == 41
     println()
 end
 
@@ -287,15 +312,16 @@ end
 
 function main()
     test_urn()
-    test_eventbin()
-    test_urnsimulator1()
-    test_urnsimulator2()
-    test_urnsimulator3()
-    test_urnsimulator4()
-    test_urnsimulator5()
-    test_urnsimulator6()
-    test_ehrenfest()
-    test_plot_trajectory1()
+    test_pull()
+    # test_eventbin()
+    # test_urnsimulator1()
+    # test_urnsimulator2()
+    # test_urnsimulator3()
+    # test_urnsimulator4()
+    # test_urnsimulator5()
+    # test_urnsimulator6()
+    # test_ehrenfest()
+    # test_plot_trajectory1()
 end
 
 main()

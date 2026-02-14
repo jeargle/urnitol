@@ -332,7 +332,13 @@ function pull_balls(pull::Pull, urn::Urn)
                 if ball_count >= ball_idx
                     urn.balls[j] -= 1
                     total_balls -= 1
-                    chosen_balls[j] = 1
+
+                    if haskey(chosen_balls, j)
+                        chosen_balls[j] += 1
+                    else
+                        chosen_balls[j] = 1
+                    end
+
                     break
                 end
             end
