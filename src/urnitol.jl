@@ -5,7 +5,7 @@ module urnitol
 
 export Urn, Odds, Pull, Action, even, proportional, EventBin, ProbArray
 export UrnSimulator
-export select_urn, move_balls, copy_balls, discard_balls, pull_ball, pull, act
+export select_urn, move_balls, copy_balls, discard_balls, pull_balls, act
 export step_sim, run_sim, choose_event, read_trajectory_file
 export write_trajectory_file, plot_trajectory, setup_sim
 
@@ -40,22 +40,26 @@ Action to take during the pull phase.
 """
 struct Pull
     pull_type::AbstractString
-    source_urns::Array{Urn, 1}
+    source_urns::Array{Urn, 1}  # Urns to pull from
     source_classes::Array{AbstractString, 1}
     source_string::AbstractString
     source_odds::Odds
+    num_pulls::Int64  # number of pulls
 
     Pull(pull_type::AbstractString,
-         source_urns::Array{Urn, 1},
-         source_odds=even) = new(pull_type, source_urns, [], "", source_odds)
+         source_urns::Array{Urn, 1};
+         source_odds=even,
+         num_pulls=1) = new(pull_type, source_urns, [], "", source_odds, num_pulls)
 
     Pull(pull_type::AbstractString,
-         source_classes::Array{AbstractString, 1},
-         source_odds=even) = new(pull_type, [], source_classes, "", source_odds)
+         source_classes::Array{AbstractString, 1};
+         source_odds=even,
+         num_pulls=1) = new(pull_type, [], source_classes, "", source_odds, num_pulls)
 
     Pull(pull_type::AbstractString,
-         source_string::AbstractString,
-         source_odds=even) = new(pull_type, [], [], source_string, source_odds)
+         source_string::AbstractString;
+         source_odds=even,
+         num_pulls=1) = new(pull_type, [], [], source_string, source_odds, num_pulls)
 end
 
 
@@ -304,29 +308,33 @@ end
 
 
 """
-    pull_ball(urn::Urn)
+    pull_balls(pull::Pull, urn::Urn)
 
 Pull a ball out of an Urn.
 
 # Arguments
+- `pull::Pull`: Pull to make from the Urn
 - `urn::Urn`: Urn from which to pull a ball
 
 # Returns
 - `SortedDict`: chosen balls
 """
-function pull_ball(urn::Urn)
+function pull_balls(pull::Pull, urn::Urn)
     chosen_balls = SortedDict()
     total_balls = sum(values(urn.balls))
 
-    if total_balls > 0
-        ball_idx = rand(1:total_balls)
-        ball_count = 0
-        for i in keys(urn.balls)
-            ball_count += urn.balls[i]
-            if ball_count >= ball_idx
-                urn.balls[i] -= 1
-                chosen_balls[i] = 1
-                break
+    for i in 1:pull.num_pulls
+        if total_balls > 0
+            ball_idx = rand(1:total_balls)
+            ball_count = 0
+            for j in keys(urn.balls)
+                ball_count += urn.balls[j]
+                if ball_count >= ball_idx
+                    urn.balls[j] -= 1
+                    total_balls -= 1
+                    chosen_balls[j] = 1
+                    break
+                end
             end
         end
     end
@@ -336,7 +344,7 @@ end
 
 
 """
-    pull(bin::EventBin, urn::Urn)
+    pull_balls(bin::EventBin, pull::Pull, urn::Urn)
 
 Pull balls from an Urn and move them into an EventBin.
 The probability that an Urn is chosen is proportional to the number of
@@ -344,10 +352,11 @@ balls in the Urn.
 
 # Arguments
 - `bin::EventBin`: EventBin that will pull balls from its Urns.
+- `pull::Pull`: Pull to make from the Urn
 - `urn::Urn`: Urn that balls are pulled from.
 """
-function pull(bin::EventBin, urn::Urn)
-    balls = pull_ball(urn)
+function pull_balls(bin::EventBin, pull::Pull, urn::Urn)
+    balls = pull_balls(pull, urn)
     @printf "    pull %s %s\n" urn.name repr(balls)
     move_balls(balls, bin.balls)
 end
@@ -474,19 +483,24 @@ end
 
 
 """
-    pull(sim::UrnSimulator)
+    pull_balls(sim::UrnSimulator)
 
 Pull balls for all EventBins in an UrnSimulator.
 
 # Arguments
 - `sim::UrnSimulator`: UrnSimulator that will perform the pull.
 """
-function pull(sim::UrnSimulator)
+function pull_balls(sim::UrnSimulator)
     for event in sim.events
-        for i in 1:event.num_pulls
-            urn = select_urn(event.urns, event.source_odds)
+        for pull in event.pulls
+            urns = pull.source_urns
+            if length(urns) == 0
+                urns = event.urns
+            end
+
+            urn = select_urn(urns, event.source_odds)
             sim.source_urns[event] = urn
-            pull(event, urn)
+            pull_balls(event, pull, urn)
         end
 
         for i in 1:event.num_creates
@@ -566,7 +580,7 @@ Calculate one timestep of an UrnSimulator.
 """
 function step_sim(sim::UrnSimulator)
     sim.step_count += 1
-    pull(sim)
+    pull_balls(sim)
     log_pulls(sim)
     act(sim)
     log_urns(sim)
@@ -707,7 +721,7 @@ function setup_sim(filename)
         for bin_info in setup["event_bins"]
             name = bin_info["name"]
 
-            bin_urns = []
+            bin_urns = Array{Urn, 1}()
             if bin_info["source_urns"] isa Array
                 for urn_name in bin_info["source_urns"]
                     push!(bin_urns, name_to_urn[urn_name])
@@ -771,25 +785,30 @@ function setup_sim(filename)
                     end
                 end
 
-                source_odds = even
+                pull_source_odds = even
                 if haskey(pull_info, "source_odds")
                     if pull_info["source_odds"] == "even"
-                        source_odds = even
+                        pull_source_odds = even
                     elseif pull_info["source_odds"] == "proportional"
-                        source_odds = proportional
+                        pull_source_odds = proportional
                     else
                         throw(DomainError(pull_info["source_odds"], "source_odds must be either \"even\" or \"proportional\""))
                     end
                 end
 
                 if length(source_urns) > 0
-                    pull = Pull(pull_type, source_urns, source_odds)
+                    pull = Pull(pull_type, source_urns, source_odds=pull_source_odds)
                 elseif length(source_classes) > 0
-                    pull = Pull(pull_type, source_classes, source_odds)
+                    pull = Pull(pull_type, source_classes, source_odds=pull_source_odds)
                 else
-                    pull = Pull(pull_type, source_string, source_odds)
+                    pull = Pull(pull_type, source_string, source_odds=pull_source_odds)
                 end
 
+                push!(pulls, pull)
+            end
+
+            if length(pulls) == 0 && length(bin_urns) > 0
+                pull = Pull("pull", bin_urns, source_odds=source_odds)
                 push!(pulls, pull)
             end
 
