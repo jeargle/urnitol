@@ -17,6 +17,7 @@ export Odds, even, proportional
 # Urn
 include("urn.jl")
 export Urn, Pull
+export PullType, pt_pull, pt_create
 # export pull_balls
 
 # Event

@@ -220,6 +220,7 @@ function setup_sim(filename)
     end
 
     # build EventBins
+    string_to_pull_type = Dict("pull"=>pt_pull, "create"=>pt_create)
     bins = Array{EventBin, 1}()
     if haskey(setup, "event_bins")
         for bin_info in setup["event_bins"]
@@ -258,7 +259,7 @@ function setup_sim(filename)
             end
 
             for pull_info in bin_info_pulls
-                pull_type = pull_info["type"]
+                pull_type = string_to_pull_type[pull_info["type"]]
 
                 source_urns = Array{Urn, 1}()
                 source_classes = Array{AbstractString, 1}()
@@ -312,7 +313,7 @@ function setup_sim(filename)
             end
 
             if length(pulls) == 0 && length(bin_urns) > 0
-                pull = Pull("pull", bin_urns, source_odds=source_odds)
+                pull = Pull(pt_pull, bin_urns, source_odds=source_odds)
                 push!(pulls, pull)
             end
 
