@@ -100,6 +100,22 @@ function test_pull()
     println(urn2)
     @test sum(values(urn2.balls)) == 41
     println()
+
+    println("*** create 3x2 balls")
+    total_balls = SortedDict("black" => 0, "white" => 0)
+    pull3 = Pull(pt_create, ["black", "white"])
+    balls = create_balls(pull3)
+    println(balls)
+    move_balls(balls, total_balls)
+    balls = create_balls(pull3)
+    println(balls)
+    move_balls(balls, total_balls)
+    balls = create_balls(pull3)
+    println(balls)
+    move_balls(balls, total_balls)
+    @test total_balls["black"] == 3
+    @test total_balls["white"] == 3
+    println()
 end
 
 function test_eventbin()

@@ -5,16 +5,16 @@
 Action to take on previously pulled balls.
 """
 struct Action
-    command::AbstractString
+    command::String
     target_urns::Array{Urn, 1}
-    target_string::AbstractString
-    class::Union{AbstractString, Nothing}
+    target_string::String
+    class::Union{String, Nothing}
     target_odds::Odds
 
-    Action(command::AbstractString,
+    Action(command::String,
            target_urns::Array{Urn, 1},
-           target_string::AbstractString="",
-           class::Union{AbstractString, Nothing}=nothing,
+           target_string::String="",
+           class::Union{String, Nothing}=nothing,
            target_odds=even) = new(command, target_urns, target_string, class, target_odds)
 end
 
@@ -23,17 +23,17 @@ end
 Temporary holding bin for balls that have been removed from Urns.
 """
 struct EventBin
-    name::AbstractString
-    balls::SortedDict{AbstractString, Int64}
+    name::String
+    balls::SortedDict{String, Int64}
     source_urns::Array{Urn, 1}
     pulls::Array{Pull, 1}
     actions::Array{Action, 1}
     source_odds::Odds
-    classes::Array{AbstractString, 1}
+    classes::Array{String, 1}
 
-    function EventBin(name::AbstractString, source_urns, pulls, actions; source_odds=even, classes=[])
+    function EventBin(name::String, source_urns, pulls, actions; source_odds=even, classes=[])
         # Normalize ball classes across Urns
-        temp_classes = Set{AbstractString}()
+        temp_classes = Set{String}()
 
         for class in classes
             push!(temp_classes, class)
@@ -45,7 +45,7 @@ struct EventBin
             end
         end
 
-        balls = SortedDict{AbstractString, Int64}()
+        balls = SortedDict{String, Int64}()
         for class in temp_classes
             if !(class in keys(balls))
                 balls[class] = 0
@@ -244,25 +244,16 @@ balls in the Urn.
 - `urn::Urn`: Urn that balls are pulled from.
 """
 function pull_balls(bin::EventBin, pull::Pull, urn::Urn)
-    balls = pull_balls(pull, urn)
-    @printf "    pull %s %s\n" urn.name repr(balls)
-    move_balls(balls, bin.balls)
-end
+    balls = []
 
+    if pull.pull_type == pt_pull
+        balls = pull_balls(pull, urn)
+        @printf "    pull %s %s\n" urn.name repr(balls)
+    elseif pull.pull_type == pt_create
+        balls = create_balls(pull)
+        @printf "    create %s\n" repr(balls)
+    end
 
-"""
-    create(bin::EventBin, class::AbstractString)
-
-Create balls of a given class and move them into an EventBin.
-
-# Arguments
-- `bin::EventBin`: EventBin that will pull balls from its Urns.
-- `class::AbstractString`: single class of ball to move.
-"""
-function create(bin::EventBin, class::AbstractString)
-    balls = SortedDict()
-    balls[class] = 1
-    @printf "    create %s %s\n" class repr(balls)
     move_balls(balls, bin.balls)
 end
 

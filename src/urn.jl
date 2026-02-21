@@ -5,10 +5,10 @@
 Urn for holding balls.
 """
 struct Urn
-    name::AbstractString
-    balls::SortedDict{AbstractString, Int64}
+    name::String
+    balls::SortedDict{String, Int64}
 
-    Urn(name::AbstractString, balls=SortedDict{AbstractString, Int64}()) = new(name, balls)
+    Urn(name::String, balls=SortedDict{String, Int64}()) = new(name, balls)
 end
 
 function Base.show(io::IO, urn::Urn)
@@ -23,7 +23,7 @@ Action to take during the pull phase.
 """
 struct Pull
     pull_type::PullType
-    source_classes::Array{AbstractString, 1}
+    source_classes::Array{String, 1}
     source_odds::Odds
     num_pulls::Int64  # number of pulls
 
@@ -32,7 +32,7 @@ struct Pull
          num_pulls=1) = new(pull_type, [], source_odds, num_pulls)
 
     Pull(pull_type::PullType,
-         source_classes::Array{AbstractString, 1};
+         source_classes::Array{String, 1};
          source_odds=even) = new(pull_type, source_classes, source_odds, length(source_classes))
 end
 
@@ -76,4 +76,30 @@ function pull_balls(pull::Pull, urn::Urn)
     end
 
     return chosen_balls
+end
+
+
+"""
+    create_balls(pull::Pull)
+
+Create balls of given classes.
+
+# Arguments
+- `pull::Pull`: Pull that specifies creation parameters
+
+# Returns
+- `SortedDict`: created balls
+"""
+function create_balls(pull::Pull)
+    created_balls = SortedDict()
+
+    for source_class in pull.source_classes
+        if haskey(created_balls, source_class)
+            created_balls[source_class] += 1
+        else
+            created_balls[source_class] = 1
+        end
+    end
+
+    return created_balls
 end

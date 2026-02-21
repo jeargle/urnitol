@@ -18,13 +18,14 @@ export Odds, even, proportional
 include("urn.jl")
 export Urn, Pull
 export PullType, pt_pull, pt_create
+export create_balls
 # export pull_balls
 
 # Event
 include("event.jl")
 export Action, EventBin, ProbArray
 export get_urns, select_urn, move_balls, copy_balls, discard_balls, double_balls
-export create, choose_event
+export choose_event
 # export pull_balls, act
 
 # Simulation

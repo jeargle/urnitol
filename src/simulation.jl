@@ -10,13 +10,13 @@ mutable struct UrnSimulator
     events::Array{EventBin, 1}
     step_count::Int64
     source_urns::Dict
-    ball_classes::Set{AbstractString}   # all ball class names
+    ball_classes::Set{String}   # all ball class names
     trajectory::DataFrame
     step_log::Dict   # scratch space for next row of trajectory
 
     function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
         # Normalize ball classes across Urns
-        ball_classes = Set{AbstractString}()
+        ball_classes = Set{String}()
         for urn in urns
             for (class, count) in urn.balls
                 push!(ball_classes, class)
@@ -252,7 +252,7 @@ function setup_sim(filename)
 
             for pull_info in bin_info_pulls
                 pull_type = string_to_pull_type[pull_info["type"]]
-                source_classes = Array{AbstractString, 1}()
+                source_classes = Array{String, 1}()
 
                 if haskey(pull_info, "source_classes")
                     for class_name in pull_info["source_classes"]
