@@ -73,7 +73,7 @@ function test_pull()
     urn2 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
 
     println("*** choose 3 balls")
-    pull1 = Pull(pt_pull, [urn1])
+    pull1 = Pull(pt_pull)
     println(urn1)
     ball = pull_balls(pull1, urn1)
     println(ball)
@@ -86,7 +86,7 @@ function test_pull()
     println()
 
     println("*** choose 3x3 balls")
-    pull2 = Pull(pt_pull, [urn2], num_pulls=3)
+    pull2 = Pull(pt_pull, num_pulls=3)
     println(pull2)
     balls = pull_balls(pull2, urn2)
     println(balls)
@@ -110,7 +110,7 @@ function test_eventbin()
 
     println("*** EventBins")
     ebin1 = EventBin("bin1", [urn1], [], [])
-    ebin2 = EventBin("bin2", [urn2], [Pull(pt_pull, [urn2])], [Action("move", [urn1], "", nothing)])
+    ebin2 = EventBin("bin2", [urn2], [Pull(pt_pull)], [Action("move", [urn1], "", nothing)])
 
     @test ebin1.name == "bin1"
     @test ebin2.name == "bin2"
@@ -118,32 +118,32 @@ function test_eventbin()
     println("*** pull")
     @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
-    @test sum(values(ebin2.urns[1].balls)) == 50
+    @test sum(values(ebin2.source_urns[1].balls)) == 50
     for i in 1:10
-        urn = select_urn(ebin2.urns, even)
+        urn = select_urn(ebin2.source_urns, even)
         pull_balls(ebin2, ebin2.pulls[1], urn)
         @printf "%s\n" repr(urn2)
         println("ebin2: ", ebin2.balls)
     end
-    @test sum(values(ebin2.urns[1].balls)) == 40
+    @test sum(values(ebin2.source_urns[1].balls)) == 40
     println()
 
     println("*** pull and act")
     @printf "%s\n" repr(urn2)
     println("ebin2: ", ebin2.balls)
     @printf "%s\n" repr(urn1)
-    @test sum(values(ebin1.urns[1].balls)) == 0
+    @test sum(values(ebin1.source_urns[1].balls)) == 0
     # First Action here will move all 10 balls in ebin2 into ebin1.
     for i in 1:10
-        urn = select_urn(ebin2.urns, even)
+        urn = select_urn(ebin2.source_urns, even)
         pull_balls(ebin2, ebin2.pulls[1], urn)
         act(ebin2, urn)
         @printf "%s\n" repr(urn2)
         # println("ebin2: ", ebin2.balls)
         @printf "%s\n" repr(urn1)
     end
-    @test sum(values(ebin1.urns[1].balls)) == 20
-    @test sum(values(ebin2.urns[1].balls)) == 30
+    @test sum(values(ebin1.source_urns[1].balls)) == 20
+    @test sum(values(ebin2.source_urns[1].balls)) == 30
     println()
 end
 
@@ -154,7 +154,7 @@ function test_urnsimulator1()
     urn2 = Urn("bird", SortedDict("black" => 0, "white" => 0))
     ebin1 = EventBin("bin3",
                      [urn1, urn2],
-                     [Pull(pt_pull, [urn1, urn2])],
+                     [Pull(pt_pull)],
                      [Action("move", [urn2], "", "black"),
                       Action("discard", Array{Urn, 1}(), "", "white")],
                      source_odds=proportional)
@@ -188,7 +188,7 @@ function test_urnsimulator2()
     urn2 = Urn("bird", SortedDict("black" => 0, "white" => 10))
     ebin1 = EventBin("bin1",
                      [urn1, urn2],
-                     [Pull(pt_pull, "all")],
+                     [Pull(pt_pull)],
                      [Action("move", [urn1], "", "white"),
                       Action("move", [urn2], "", "black")])
 

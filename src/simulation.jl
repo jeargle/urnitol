@@ -66,20 +66,12 @@ Pull balls for all EventBins in an UrnSimulator.
 """
 function pull_balls(sim::UrnSimulator)
     for event in sim.events
+        urns = event.source_urns
+
+        urn = select_urn(urns, event.source_odds)
+        sim.source_urns[event] = urn
         for pull in event.pulls
-            urns = pull.source_urns
-            if length(urns) == 0
-                urns = event.urns
-            end
-
-            urn = select_urn(urns, event.source_odds)
-            sim.source_urns[event] = urn
             pull_balls(event, pull, urn)
-        end
-
-        for i in 1:event.num_creates
-            class = rand(event.classes)
-            create(event, class)
         end
     end
 end
@@ -226,18 +218,18 @@ function setup_sim(filename)
         for bin_info in setup["event_bins"]
             name = bin_info["name"]
 
-            bin_urns = Array{Urn, 1}()
+            source_urns = Array{Urn, 1}()
             if bin_info["source_urns"] isa Array
                 for urn_name in bin_info["source_urns"]
-                    push!(bin_urns, name_to_urn[urn_name])
+                    push!(source_urns, name_to_urn[urn_name])
                 end
             elseif bin_info["source_urns"] == "all"
                 for urn in urns
-                    push!(bin_urns, urn)
+                    push!(source_urns, urn)
                 end
             else
                 urn_name = bin_info["source_urns"]
-                push!(bin_urns, name_to_urn[urn_name])
+                push!(source_urns, name_to_urn[urn_name])
             end
 
             source_odds = even
@@ -260,29 +252,7 @@ function setup_sim(filename)
 
             for pull_info in bin_info_pulls
                 pull_type = string_to_pull_type[pull_info["type"]]
-
-                source_urns = Array{Urn, 1}()
                 source_classes = Array{AbstractString, 1}()
-                source_string = ""
-
-                if haskey(pull_info, "source_urns")
-                    if pull_info["source_urns"] isa Array
-                        for urn_name in pull_info["source_urns"]
-                            push!(source_urns, name_to_urn[urn_name])
-                        end
-                    elseif pull_info["source_urns"] == "all"
-                        for urn in urns
-                            push!(source_urns, urn)
-                        end
-                    elseif pull_info["source_urns"] == "source"
-                        source_string = "source"
-                    elseif pull_info["source_urns"] == "not source"
-                        source_string = "not source"
-                    else
-                        urn_name = pull_info["source_urns"]
-                        push!(source_urns, name_to_urn[urn_name])
-                    end
-                end
 
                 if haskey(pull_info, "source_classes")
                     for class_name in pull_info["source_classes"]
@@ -301,19 +271,12 @@ function setup_sim(filename)
                     end
                 end
 
-                if length(source_urns) > 0
-                    pull = Pull(pull_type, source_urns, source_odds=pull_source_odds)
-                elseif length(source_classes) > 0
+                if length(source_classes) > 0
                     pull = Pull(pull_type, source_classes, source_odds=pull_source_odds)
                 else
-                    pull = Pull(pull_type, source_string, source_odds=pull_source_odds)
+                    pull = Pull(pull_type, source_odds=pull_source_odds)
                 end
 
-                push!(pulls, pull)
-            end
-
-            if length(pulls) == 0 && length(bin_urns) > 0
-                pull = Pull(pt_pull, bin_urns, source_odds=source_odds)
                 push!(pulls, pull)
             end
 
@@ -362,7 +325,7 @@ function setup_sim(filename)
                 push!(actions, action)
             end
 
-            bin = EventBin(name, bin_urns, pulls, actions, source_odds=source_odds)
+            bin = EventBin(name, source_urns, pulls, actions, source_odds=source_odds)
             push!(bins, bin)
         end
     end

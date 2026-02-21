@@ -25,15 +25,13 @@ Temporary holding bin for balls that have been removed from Urns.
 struct EventBin
     name::AbstractString
     balls::SortedDict{AbstractString, Int64}
-    urns::Array{Urn, 1}
+    source_urns::Array{Urn, 1}
     pulls::Array{Pull, 1}
     actions::Array{Action, 1}
     source_odds::Odds
     classes::Array{AbstractString, 1}
-    num_pulls::Int64
-    num_creates::Int64
 
-    function EventBin(name::AbstractString, urns, pulls, actions; source_odds=even, classes=[])
+    function EventBin(name::AbstractString, source_urns, pulls, actions; source_odds=even, classes=[])
         # Normalize ball classes across Urns
         temp_classes = Set{AbstractString}()
 
@@ -41,7 +39,7 @@ struct EventBin
             push!(temp_classes, class)
         end
 
-        for urn in urns
+        for urn in source_urns
             for (class, count) in urn.balls
                 push!(temp_classes, class)
             end
@@ -54,19 +52,7 @@ struct EventBin
             end
         end
 
-        if length(urns) > 0
-            num_pulls = 1
-        else
-            num_pulls = 0
-        end
-
-        if length(classes) > 0
-            num_creates = 1
-        else
-            num_creates = 0
-        end
-
-        new(name, balls, urns, pulls, actions, source_odds, classes, num_pulls, num_creates)
+        new(name, balls, source_urns, pulls, actions, source_odds, classes)
     end
 end
 
@@ -88,11 +74,11 @@ function get_urns(action::Action, bin::EventBin, source_urn::Urn)
     if length(action.target_urns) > 0
         urns = action.target_urns
     elseif action.target_string == "all"
-        urns = bin.urns
+        urns = bin.source_urns
     elseif action.target_string == "source"
         urns = [source_urn]
     elseif action.target_string == "not source"
-        urns = [urn for urn in bin.urns if urn != source_urn]
+        urns = [urn for urn in bin.source_urns if urn != source_urn]
     else
         urns = Array{Urn, 1}()
     end

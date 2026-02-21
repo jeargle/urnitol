@@ -23,26 +23,17 @@ Action to take during the pull phase.
 """
 struct Pull
     pull_type::PullType
-    source_urns::Array{Urn, 1}  # Urns to pull from
     source_classes::Array{AbstractString, 1}
-    source_string::AbstractString
     source_odds::Odds
     num_pulls::Int64  # number of pulls
 
-    Pull(pull_type::PullType,
-         source_urns::Array{Urn, 1};
+    Pull(pull_type::PullType;
          source_odds=even,
-         num_pulls=1) = new(pull_type, source_urns, [], "", source_odds, num_pulls)
+         num_pulls=1) = new(pull_type, [], source_odds, num_pulls)
 
     Pull(pull_type::PullType,
          source_classes::Array{AbstractString, 1};
-         source_odds=even,
-         num_pulls=1) = new(pull_type, [], source_classes, "", source_odds, num_pulls)
-
-    Pull(pull_type::PullType,
-         source_string::AbstractString;
-         source_odds=even,
-         num_pulls=1) = new(pull_type, [], [], source_string, source_odds, num_pulls)
+         source_odds=even) = new(pull_type, source_classes, source_odds, length(source_classes))
 end
 
 
