@@ -15,9 +15,9 @@ In urnitol models are set up and run through `UrnSimulators` which consist of ar
 
 So the 3-step simulation loop goes:
 
-1. urn - select an `Urn` to pull from
-2. pull - pull balls from the selected `Urn` and place in `EventBins`
-3. action - act on the `EventBin` balls
+1. select an `Urn` to pull from
+2. pull balls from the selected `Urn` and place in `EventBins`
+3. process `Actions` for balls in the `EventBin`
 
 `Pull` types:
 
