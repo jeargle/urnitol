@@ -205,16 +205,17 @@ end
 
 
 """
-    double_balls(balls1::SortedDict, balls2::SortedDict, class)
+    multiply_balls(balls1::SortedDict, balls2::SortedDict, multiplier::Int64; class)
 
-Double and move balls from one collection into another.
+Multiply and move balls from one collection into another.
 
 # Arguments
-- `balls1::SortedDict`: collection of balls to double.
+- `balls1::SortedDict`: collection of balls to multiply.
 - `balls2::SortedDict`: collection to receive balls.
-- `class`: single class of ball to double; nothing uses all classes.
+- `multiplier::Int64`: number of times to multiply the balls.
+- `class`: single class of ball to multiply; nothing uses all classes.
 """
-function double_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
+function multiply_balls(balls1::SortedDict, balls2::SortedDict, multiplier::Int64; class=nothing)
     if class == nothing
         classes = keys(balls1)
     else
@@ -225,9 +226,24 @@ function double_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
         if get(balls2, i, nothing) == nothing
             balls2[i] = 0
         end
-        balls2[i] += balls1[i] * 2
+        balls2[i] += balls1[i] * multiplier
         balls1[i] = 0
     end
+end
+
+
+"""
+    double_balls(balls1::SortedDict, balls2::SortedDict, class)
+
+Double and move balls from one collection into another.
+
+# Arguments
+- `balls1::SortedDict`: collection of balls to double.
+- `balls2::SortedDict`: collection to receive balls.
+- `class`: single class of ball to double; nothing uses all classes.
+"""
+function double_balls(balls1::SortedDict, balls2::SortedDict; class=nothing)
+    multiply_balls(balls1, balls2, 2, class=class)
 end
 
 
@@ -301,6 +317,12 @@ function act(bin::EventBin, source_urn::Urn)
                 @printf "    double %s %s\n" action.class repr(bin.balls[action.class])
             end
             double_balls(bin.balls, urn.balls, class=action.class)
+        elseif split(action.command)[1] == "multiply"
+            multiplier = parse(Int64, split(action.command)[2])
+            if action.class != nothing && bin.balls[action.class] > 0
+                @printf "    multiply %d %s %s\n" multiplier action.class repr(bin.balls[action.class])
+            end
+            multiply_balls(bin.balls, urn.balls, multiplier, class=action.class)
         end
     end
 end
