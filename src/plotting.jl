@@ -2,18 +2,22 @@
 # urnitol.plotting
 
 """
-    plot_trajectory(trajectory)
+    plot_trajectory(trajectory; column_names=nothing)
 
 Create a plot of Urns contents over time.
 
 # Arguments
 - `trajectory::DataFrame`: record of Urns and balls for each step of an simulation.
+- `column_names::Union{Array{String, 1}, Nothing}`: array of column names to plot.
 
 # Returns
 - plot object
 """
-function plot_trajectory(trajectory::DataFrame)
-    column_names = [n for n in names(trajectory) if length(split(n, ".")) == 2]
+function plot_trajectory(trajectory::DataFrame; column_names::Union{Array{String, 1}, Nothing}=nothing)
+    if column_names == nothing
+        column_names = [n for n in names(trajectory) if length(split(n, ".")) == 2]
+    end
+
     x = trajectory.step
     ys = [trajectory[!, Symbol(cn)] for cn in column_names]
 

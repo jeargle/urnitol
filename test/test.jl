@@ -339,6 +339,15 @@ function test_plot_trajectory1()
     @test isfile("urns3.svg")
 
     println("all values plotted")
+
+    p = plot_trajectory(sim.trajectory, column_names=["snuffy.white", "bird.white"])
+    @test p[1][:title] == "Urn contents"
+    @test isa(p, Plots.Plot)
+
+    savefig(p, "urns3.1.svg")
+    @test isfile("urns3.1.svg")
+
+    println("specified column values plotted")
 end
 
 function main()
