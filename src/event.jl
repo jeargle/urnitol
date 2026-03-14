@@ -205,6 +205,34 @@ end
 
 
 """
+    add_balls(balls1::SortedDict, balls2::SortedDict, multiplier::Int64; class)
+
+Add balls and move them from one collection into another.
+
+# Arguments
+- `balls1::SortedDict`: collection of balls to add.
+- `balls2::SortedDict`: collection to receive balls.
+- `number::Int64`: number of balls to add.
+- `class`: single class of ball to add; nothing uses all classes.
+"""
+function add_balls(balls1::SortedDict, balls2::SortedDict, number::Int64; class=nothing)
+    if class == nothing
+        classes = [key for key in keys(balls1) if balls1[key] > 0]
+    else
+        classes = [class]
+    end
+
+    for i in classes
+        if get(balls2, i, nothing) == nothing
+            balls2[i] = 0
+        end
+        balls2[i] += balls1[i] + number
+        balls1[i] = 0
+    end
+end
+
+
+"""
     multiply_balls(balls1::SortedDict, balls2::SortedDict, multiplier::Int64; class)
 
 Multiply and move balls from one collection into another.
@@ -317,6 +345,12 @@ function act(bin::EventBin, source_urn::Urn)
                 @printf "    double %s %s\n" action.class repr(bin.balls[action.class])
             end
             double_balls(bin.balls, urn.balls, class=action.class)
+        elseif split(action.command)[1] == "add"
+            number = parse(Int64, split(action.command)[2])
+            if action.class != nothing && bin.balls[action.class] > 0
+                @printf "    add %d %s %s\n" number action.class repr(bin.balls[action.class])
+            end
+            add_balls(bin.balls, urn.balls, number, class=action.class)
         elseif split(action.command)[1] == "multiply"
             multiplier = parse(Int64, split(action.command)[2])
             if action.class != nothing && bin.balls[action.class] > 0

@@ -309,17 +309,32 @@ function test_ehrenfest()
     @test sim.urns[1].balls["white"] + sim.urns[2].balls["white"] == 30
 end
 
-function test_polya()
-    print_test_header("Polya")
+function test_polya1()
+    print_test_header("Polya 1")
 
-    sim, num_steps = setup_sim("urns/polya.yml")
+    sim, num_steps = setup_sim("urns/polya1.yml")
     @printf "sim: %s\n" repr(sim)
     @printf "num_steps: %d\n" num_steps
     @test sim.ball_classes == Set(["black", "white"])
     @test sim.step_count == 0
 
     run_sim(sim, num_steps)
-    write_trajectory_file("polya.csv", sim.trajectory)
+    write_trajectory_file("polya1.csv", sim.trajectory)
+    @test sim.step_count == 200
+    @test sim.urns[1].balls["white"] + sim.urns[1].balls["black"] == 820
+end
+
+function test_polya2()
+    print_test_header("Polya 2")
+
+    sim, num_steps = setup_sim("urns/polya2.yml")
+    @printf "sim: %s\n" repr(sim)
+    @printf "num_steps: %d\n" num_steps
+    @test sim.ball_classes == Set(["black", "white"])
+    @test sim.step_count == 0
+
+    run_sim(sim, num_steps)
+    write_trajectory_file("polya2.csv", sim.trajectory)
     @test sim.step_count == 200
     @test sim.urns[1].balls["white"] + sim.urns[1].balls["black"] == 820
 end
@@ -361,7 +376,8 @@ function main()
     test_urnsimulator5()
     test_urnsimulator6()
     test_ehrenfest()
-    test_polya()
+    test_polya1()
+    test_polya2()
     test_plot_trajectory1()
 end
 

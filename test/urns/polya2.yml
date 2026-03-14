@@ -1,0 +1,19 @@
+
+num_steps: 200
+
+urns:
+  - name: urn1
+    balls:
+      - class: black
+        num: 10
+      - class: white
+        num: 10
+
+event_bins:
+  - name: bin1
+    source_urns: urn1
+    pulls:
+      - type: pull
+    actions:
+      - type: add 4
+        target_urns: urn1
