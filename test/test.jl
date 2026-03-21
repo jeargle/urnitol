@@ -409,23 +409,30 @@ function test_plot_trajectory1()
     savefig(p, "urns3.1.svg")
     @test isfile("urns3.1.svg")
 
+    p = plot_trajectory(sim.trajectory, column_names=["snuffy", "bird"])
+    @test p[1][:title] == "Urn contents"
+    @test isa(p, Plots.Plot)
+
+    savefig(p, "urns3.2.svg")
+    @test isfile("urns3.2.svg")
+
     println("specified column values plotted")
 end
 
 function main()
-    # test_urn()
+    test_urn()
     test_pull()
-    # test_eventbin()
-    # test_urnsimulator1()
-    # test_urnsimulator2()
-    # test_urnsimulator3()
-    # test_urnsimulator4()
-    # test_urnsimulator5()
-    # test_urnsimulator6()
-    # test_ehrenfest()
-    # test_polya1()
-    # test_polya2()
-    # test_plot_trajectory1()
+    test_eventbin()
+    test_urnsimulator1()
+    test_urnsimulator2()
+    test_urnsimulator3()
+    test_urnsimulator4()
+    test_urnsimulator5()
+    test_urnsimulator6()
+    test_ehrenfest()
+    test_polya1()
+    test_polya2()
+    test_plot_trajectory1()
 end
 
 main()
