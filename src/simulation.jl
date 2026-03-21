@@ -212,7 +212,7 @@ function setup_sim(filename)
     end
 
     # build EventBins
-    string_to_pull_type = Dict("pull"=>pt_pull, "create"=>pt_create)
+    string_to_pull_type = Dict("pull"=>pt_pull, "create"=>pt_create, "known_class"=>pt_known_class)
     bins = Array{EventBin, 1}()
     if haskey(setup, "event_bins")
         for bin_info in setup["event_bins"]

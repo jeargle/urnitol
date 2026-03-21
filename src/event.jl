@@ -296,6 +296,9 @@ function pull_balls(bin::EventBin, pull::Pull, urn::Urn)
     elseif pull.pull_type == pt_create
         balls = create_balls(pull)
         @printf "    create %s\n" repr(balls)
+    elseif pull.pull_type == pt_known_class
+        balls = pull_known_class_balls(pull, urn)
+        @printf "    pull known class %s\n" repr(balls)
     end
 
     move_balls(balls, bin.balls)

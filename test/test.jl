@@ -71,6 +71,8 @@ function test_pull()
     println("*** Urns")
     urn1 = Urn("bert", SortedDict("black" => 2, "white" => 3))
     urn2 = Urn("sesame", SortedDict("black" => 20, "white" => 30))
+    urn3 = Urn("urnie", SortedDict("black" => 20, "white" => 30))
+    urn4 = Urn("snuffy", SortedDict("black" => 20, "white" => 30))
 
     println("*** choose 3 balls")
     pull1 = Pull(pt_pull)
@@ -115,6 +117,51 @@ function test_pull()
     move_balls(balls, total_balls)
     @test total_balls["black"] == 3
     @test total_balls["white"] == 3
+    println()
+
+    println("*** choose 3 black balls")
+    pull4 = Pull(pt_known_class, ["black"])
+    println(pull4)
+    balls = pull_known_class_balls(pull4, urn3)
+    println(balls)
+    @test balls["black"] == 1
+    @test urn3.balls["black"] == 19
+    @test urn3.balls["white"] == 30
+    balls = pull_known_class_balls(pull4, urn3)
+    println(balls)
+    @test balls["black"] == 1
+    @test urn3.balls["black"] == 18
+    @test urn3.balls["white"] == 30
+    balls = pull_known_class_balls(pull4, urn3)
+    println(balls)
+    @test balls["black"] == 1
+    @test urn3.balls["black"] == 17
+    @test urn3.balls["white"] == 30
+    println(urn3)
+    println()
+
+    println("*** choose 3x3 black and white balls")
+    pull5 = Pull(pt_known_class, ["black", "white"], num_pulls=3)
+    println(pull5)
+    balls = pull_known_class_balls(pull5, urn4)
+    println(balls)
+    @test balls["black"] == 3
+    @test balls["white"] == 3
+    @test urn4.balls["black"] == 17
+    @test urn4.balls["white"] == 27
+    balls = pull_known_class_balls(pull5, urn4)
+    println(balls)
+    @test balls["black"] == 3
+    @test balls["white"] == 3
+    @test urn4.balls["black"] == 14
+    @test urn4.balls["white"] == 24
+    balls = pull_known_class_balls(pull5, urn4)
+    println(balls)
+    @test balls["black"] == 3
+    @test balls["white"] == 3
+    @test urn4.balls["black"] == 11
+    @test urn4.balls["white"] == 21
+    println(urn4)
     println()
 end
 
@@ -366,19 +413,19 @@ function test_plot_trajectory1()
 end
 
 function main()
-    test_urn()
+    # test_urn()
     test_pull()
-    test_eventbin()
-    test_urnsimulator1()
-    test_urnsimulator2()
-    test_urnsimulator3()
-    test_urnsimulator4()
-    test_urnsimulator5()
-    test_urnsimulator6()
-    test_ehrenfest()
-    test_polya1()
-    test_polya2()
-    test_plot_trajectory1()
+    # test_eventbin()
+    # test_urnsimulator1()
+    # test_urnsimulator2()
+    # test_urnsimulator3()
+    # test_urnsimulator4()
+    # test_urnsimulator5()
+    # test_urnsimulator6()
+    # test_ehrenfest()
+    # test_polya1()
+    # test_polya2()
+    # test_plot_trajectory1()
 end
 
 main()

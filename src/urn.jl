@@ -16,7 +16,7 @@ function Base.show(io::IO, urn::Urn)
 end
 
 
-@enum PullType pt_pull pt_create
+@enum PullType pt_pull pt_create pt_known_class
 
 """
 Action to take during the pull phase.
@@ -34,17 +34,21 @@ struct Pull
     Pull(pull_type::PullType,
          source_classes::Array{String, 1};
          source_odds=even) = new(pull_type, source_classes, source_odds, length(source_classes))
+
+    Pull(pull_type::PullType,
+         source_classes::Array{String, 1};
+         num_pulls=1) = new(pull_type, source_classes, even, num_pulls)
 end
 
 
 """
     pull_balls(pull::Pull, urn::Urn)
 
-Pull a ball out of an Urn.
+Pull balls out of an Urn.
 
 # Arguments
 - `pull::Pull`: Pull to make from the Urn
-- `urn::Urn`: Urn from which to pull a ball
+- `urn::Urn`: Urn from which to pull balls
 
 # Returns
 - `SortedDict`: chosen balls
@@ -102,4 +106,37 @@ function create_balls(pull::Pull)
     end
 
     return created_balls
+end
+
+
+"""
+    pull_known_class_balls(pull::Pull, urn::Urn)
+
+Pull balls with known classes out of an Urn.
+
+# Arguments
+- `pull::Pull`: Pull to make from the Urn
+- `urn::Urn`: Urn from which to pull balls
+
+# Returns
+- `SortedDict`: chosen balls
+"""
+function pull_known_class_balls(pull::Pull, urn::Urn)
+    chosen_balls = SortedDict()
+
+    for i in 1:pull.num_pulls
+        for source_class in pull.source_classes
+            if urn.balls[source_class] > 0
+                urn.balls[source_class] -= 1
+
+                if haskey(chosen_balls, source_class)
+                    chosen_balls[source_class] += 1
+                else
+                    chosen_balls[source_class] = 1
+                end
+            end
+        end
+    end
+
+    return chosen_balls
 end
