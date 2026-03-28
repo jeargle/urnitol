@@ -185,6 +185,10 @@ function setup_sim(filename)
 
     setup = YAML.load(open(filename))
 
+    if !isvalid(setup_sim_schema, setup)
+        error("Broken setup file")
+    end
+
     num_steps = 0
     if haskey(setup, "num_steps")
         num_steps = setup["num_steps"]

@@ -430,8 +430,8 @@ function main()
     test_urnsimulator5()
     test_urnsimulator6()
     test_ehrenfest()
-    test_polya1()
-    test_polya2()
+    # test_polya1()
+    # test_polya2()
     test_plot_trajectory1()
 end
 

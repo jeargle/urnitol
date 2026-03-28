@@ -56,6 +56,23 @@
                     "source_odds": {
                         "type": "string"
                     },
+                    "pulls": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["pull", "create", "known_class"]
+                                }
+                            },
+                            "required": [
+                                "type"
+                            ],
+                            "title": "Pull"
+                        }
+                    },
                     "actions": {
                         "type": "array",
                         "items": {
@@ -63,7 +80,15 @@
                             "additionalProperties": false,
                             "properties": {
                                 "type": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "enum": [
+                                        "move",
+                                        "copy",
+                                        "discard",
+                                        "double",
+                                        "add",
+                                        "multiply"
+                                    ]
                                 },
                                 "target_urns": {
                                     "type": "string"
@@ -73,7 +98,6 @@
                                 }
                             },
                             "required": [
-                                "class",
                                 "type"
                             ],
                             "title": "Action"
@@ -83,7 +107,6 @@
                 "required": [
                     "actions",
                     "name",
-                    "source_odds",
                     "source_urns"
                 ],
                 "title": "EventBin"
