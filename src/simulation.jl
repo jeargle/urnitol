@@ -180,6 +180,9 @@ Create an UrnSimulator from a YAML setup file.
 - `filename`: name of YAML setup file.
 """
 function setup_sim(filename)
+    schema_path = joinpath(@__DIR__, "setup_sim_schema.json")
+    setup_sim_schema = Schema(JSON.parse(open(schema_path)))
+
     setup = YAML.load(open(filename))
 
     num_steps = 0

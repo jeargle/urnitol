@@ -1,0 +1,99 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "num_steps": {
+            "type": "integer"
+        },
+        "urns": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "balls": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "class": {
+                                    "type": "string"
+                                },
+                                "num": {
+                                    "type": "integer"
+                                }
+                            },
+                            "required": [
+                                "class",
+                                "num"
+                            ],
+                            "title": "Ball"
+                        }
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "Urn"
+            }
+        },
+        "event_bins": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "source_urns": {
+                        "type": "string"
+                    },
+                    "source_odds": {
+                        "type": "string"
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "type": {
+                                    "type": "string"
+                                },
+                                "target_urns": {
+                                    "type": "string"
+                                },
+                                "class": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "class",
+                                "type"
+                            ],
+                            "title": "Action"
+                        }
+                    }
+                },
+                "required": [
+                    "actions",
+                    "name",
+                    "source_odds",
+                    "source_urns"
+                ],
+                "title": "EventBin"
+            }
+        }
+    },
+    "required": [
+        "event_bins",
+        "num_steps",
+        "urns"
+    ],
+    "title": "SetupSim"
+}

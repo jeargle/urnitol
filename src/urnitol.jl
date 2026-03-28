@@ -6,6 +6,8 @@ module urnitol
 using CSV
 using DataFrames
 using DataStructures
+using JSON
+using JSONSchema
 using Plots
 using Printf
 using YAML
