@@ -80,15 +80,7 @@
                             "additionalProperties": false,
                             "properties": {
                                 "type": {
-                                    "type": "string",
-                                    "enum": [
-                                        "move",
-                                        "copy",
-                                        "discard",
-                                        "double",
-                                        "add",
-                                        "multiply"
-                                    ]
+                                    "type": "string"
                                 },
                                 "target_urns": {
                                     "type": "string"
