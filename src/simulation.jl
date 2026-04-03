@@ -15,7 +15,7 @@ mutable struct UrnSimulator
     step_log::Dict   # scratch space for next row of trajectory
 
     function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
-        # Normalize ball classes across Urns
+        # Normalize ball classes across Urns.
         ball_classes = Set{String}()
         for urn in urns
             for (class, count) in urn.balls
@@ -31,7 +31,7 @@ mutable struct UrnSimulator
             end
         end
 
-        # Build empty trajectory
+        # Build empty trajectory.
         header = OrderedDict()
         header[:step] = Int[]
 
@@ -194,7 +194,7 @@ function setup_sim(filename)
         num_steps = setup["num_steps"]
     end
 
-    # build Urns
+    # Build Urns.
     urns = Array{Urn, 1}()
     name_to_urn = Dict()
     if haskey(setup, "urns")
@@ -218,7 +218,7 @@ function setup_sim(filename)
         end
     end
 
-    # build EventBins
+    # Build EventBins.
     string_to_pull_type = Dict("pull"=>pt_pull, "create"=>pt_create, "known_class"=>pt_known_class)
     bins = Array{EventBin, 1}()
     if haskey(setup, "event_bins")

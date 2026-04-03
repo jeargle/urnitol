@@ -202,7 +202,6 @@ function test_eventbin()
         pull_balls(ebin2, ebin2.pulls[1], urn)
         act(ebin2, urn)
         @printf "%s\n" repr(urn2)
-        # println("ebin2: ", ebin2.balls)
         @printf "%s\n" repr(urn1)
     end
     @test sum(values(ebin1.source_urns[1].balls)) == 20
@@ -430,8 +429,8 @@ function main()
     test_urnsimulator5()
     test_urnsimulator6()
     test_ehrenfest()
-    # test_polya1()
-    # test_polya2()
+    test_polya1()
+    test_polya2()
     test_plot_trajectory1()
 end
 
