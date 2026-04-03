@@ -89,6 +89,8 @@ Dependencies
 * CSV
 * DataFrames
 * DataStructures
+* JSON
+* JSONSchema
 * Plots
 * Printf
 * YAML
