@@ -363,21 +363,3 @@ function act(bin::EventBin, source_urn::Urn)
         end
     end
 end
-
-
-"""
-"""
-struct ProbArray
-    event_weights::Array{EventBin, 1}
-end
-
-
-"""
-    choose_event(prob)
-
-# Arguments
-- `prob`: probability distribution
-"""
-function choose_event(prob)
-    return rand(prob.event_weights)
-end

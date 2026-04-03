@@ -12,9 +12,10 @@ mutable struct UrnSimulator
     source_urns::Dict
     ball_classes::Set{String}   # all ball class names
     trajectory::DataFrame
+    event_odds::Array{EventBin, 1}
     step_log::Dict   # scratch space for next row of trajectory
 
-    function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0)
+    function UrnSimulator(urns::Array{Urn, 1}, events::Array{EventBin, 1}, step_count::Int64=0; event_odds=Array{EventBin, 1}())
         # Normalize ball classes across Urns.
         ball_classes = Set{String}()
         for urn in urns
@@ -47,7 +48,7 @@ mutable struct UrnSimulator
         end
         trajectory = DataFrame(header)
 
-        new(urns, events, step_count, Dict(), ball_classes, trajectory)
+        new(urns, events, step_count, Dict(), ball_classes, trajectory, event_odds)
     end
 end
 
@@ -65,7 +66,13 @@ Pull balls for all EventBins in an UrnSimulator.
 - `sim::UrnSimulator`: UrnSimulator that will perform the pull.
 """
 function pull_balls(sim::UrnSimulator)
-    for event in sim.events
+    if length(sim.event_odds) == 0
+        events = sim.events
+    else
+        events = [rand(sim.event_odds)]
+    end
+
+    for event in events
         urns = event.source_urns
 
         urn = select_urn(urns, event.source_odds)
@@ -337,7 +344,17 @@ function setup_sim(filename)
         end
     end
 
-    return (UrnSimulator(urns, bins), num_steps)
+    # Build Urns.
+    event_odds = Array{EventBin, 1}()
+    if haskey(setup, "event_odds")
+        name_to_event = Dict(bin.name => bin for bin in bins)
+        for (name, odds) in setup["event_odds"]
+            bin = name_to_event[name]
+            append!(event_odds, [bin for i in 1:odds])
+        end
+    end
+
+    return (UrnSimulator(urns, bins, event_odds=event_odds), num_steps)
 end
 
 
